@@ -11,3 +11,9 @@ def home(request):
 
 def my_weather(request):
     return HttpResponse("My Weather Page")
+
+def my_profile(request):
+    return HttpResponse("User Profile Goes Here")
+
+def browse(request):
+    return HttpResponse("Browse Tab")
