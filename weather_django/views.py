@@ -1,6 +1,12 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.http import HttpResponse
+import weather_django.models# import Location, Forum, UserProfile, Comment
+from django.shortcuts import redirect
+from django.urls import reverse
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from datetime import datetime
 
 # Create your views here.
 def index(request):
@@ -24,3 +30,4 @@ def browse(request):
 def saved_locations(request):
     response = render(request, 'hows_the_weather/saved_locations.html')
     return response
+
