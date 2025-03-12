@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+
+<html>
+    <head>
+        <title>
+            {% block title_block %}
+                Testing the Base HTML
+            {% endblock %}
+        </title>
+    </head>
+
+    <ul>
+        {% block sidebar_block %}
+            <a href="{% url 'hows-the-weather:home' %}">Home</a><br>
+            <a href="{% url 'hows-the-weather:my-profile' %}">Placeholder Profile</a><br>
+            <hr />
+        {% endblock %}
+    </ul>
+    
+
+    <h1>
+        {% block heading_block %}
+            How's The Weather Today?
+        {% endblock %}
+    </h1>
+
+    <body bgcolor="#8de8f4">
+        {% block body_block %}
+            Test Block
+        {% endblock %}
+    </body>
+
+    {% block bottom_block %}
+        <hr />
+        Browse Weather <br>
+        My Weather <br>
+        Saved Location <br>
+    {% endblock %}
+</html>
