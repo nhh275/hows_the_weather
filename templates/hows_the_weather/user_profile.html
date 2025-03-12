@@ -12,7 +12,7 @@
     {% block body_block %}
         <h2>Name</h2>
         <h3>ID: Placeholder</h3>
-        <h3>Location: Placeholder</h3>
+        <h3>Location: <a href="{% url 'hows-the-weather:saved-locations' %}">Placeholder</a></h3>
         About Me:
         <input type="text" id="test_textbox" name="test_textbox"><br>
     {% endblock %}

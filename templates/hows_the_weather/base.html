@@ -12,11 +12,12 @@
 
     <ul>
         {% block sidebar_block %}
-                <a href="{% url 'hows-the-weather:home' %}">Home</a><br>
-                <a href="{% url 'hows-the-weather:my-profile' %}">Placeholder Profile</a><br>
+            <a href="{% url 'hows-the-weather:home' %}">Home</a><br>
+            <a href="{% url 'hows-the-weather:my-profile' %}">Placeholder Profile</a><br>
+            <hr />
         {% endblock %}
     </ul>
-    <hr />
+    
 
     <h1>
         {% block heading_block %}
@@ -29,4 +30,11 @@
             Test Block
         {% endblock %}
     </body>
+
+    {% block bottom_block %}
+        <hr />
+        Browse Weather <br>
+        My Weather <br>
+        Saved Location <br>
+    {% endblock %}
 </html>

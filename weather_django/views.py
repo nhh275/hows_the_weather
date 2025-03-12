@@ -20,3 +20,7 @@ def my_profile(request):
 
 def browse(request):
     return HttpResponse("Browse Tab")
+
+def saved_locations(request):
+    response = render(request, 'hows_the_weather/saved_locations.html')
+    return response
