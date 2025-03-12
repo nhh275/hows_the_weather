@@ -23,5 +23,5 @@ from django.urls import path
 urlpatterns = [
     path('', views.index, name='index'),
     path('admin/', admin.site.urls),
-    path('hows-the-weather/', include('weather_django.urls')),
+    path('hows-the-weather/', include('weather_django.urls', 'weather_django')),
 ]

@@ -5,15 +5,28 @@
 <html>
     <head>
         {% block heading_block %}
-            Your Profile!
+            Your Profile
         {% endblock %}
     </head>
 
     {% block body_block %}
-        <h2>Name</h2>
-        <h3>ID: Placeholder</h3>
-        <h3>Location: <a href="{% url 'hows-the-weather:saved-locations' %}">Placeholder</a></h3>
-        About Me:
-        <input type="text" id="test_textbox" name="test_textbox"><br>
+    <div>
+        {% if user.is_authenticated %}
+            <h3>Name {{ user.username }}</h3>
+            <h3>ID: {{ user.id }}</h3>
+            <h3>Location: <a href="{% url 'hows_the_weather:saved-locations' %}">Placeholder</a></h3>
+            About Me:
+            <input type="text" id="test_textbox" name="test_textbox"><br>
+            {% comment %} {% if profile and profile.picture %}
+                <!--<img src="{{ profile.picture.url }}" alt = "User profile picture">--> 
+            {% endif %} {% endcomment %}
+        {% else %}
+            You are not logged in.
+            <a href="{% url 'hows_the_weather:register' %}">Register here</a>
+            <a href="{% url 'hows_the_weather:login' %}">Log In here</a>
+        {% endif %}
+        <br>
+    </div>
+        
     {% endblock %}
 </html>
