@@ -7,6 +7,7 @@ from weather_django import views
 
 app_name = 'hows_the_weather'
 
+
 urlpatterns = [
     path('', views.index, name='index'),
     path('home/', views.home, name='home'),
@@ -17,4 +18,5 @@ urlpatterns = [
     path('login/', views.user_login, name='login'),
     path('browse/', views.browse, name='browse'),
     path('logout/', views.user_logout, name='logout'),
+
 ]
