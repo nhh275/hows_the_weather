@@ -8,7 +8,7 @@ maxReviewLength = 256
 
 class Location(models.Model):
     name = models.CharField(max_length=maxCharLength)
-    forum = models.URLField(blank=False)
+    location_forum = models.URLField(blank=False)
     rating = models.IntegerField(default=0)
     weather_description = models.CharField(max_length=maxCharLength)
     slug = models.SlugField(unique=True)
@@ -58,7 +58,6 @@ class Comment(models.Model):
     
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    website = models.URLField(blank=True)
     picture = models.ImageField(upload_to='profile_images', blank=True)
     
     def __str__(self):

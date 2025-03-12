@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+{% extends 'hows_the_weather/base.html' %}
+{% load staticfiles %}
+
+<html>
+    <head>
+        {% block title_block %}
+            Register
+        {% endblock %}
+    </head>
+
+    {% block body_block %}
+        <h1>Register for Weather App</h1>
+        {% if registered %}
+            <strong>Thank you for registering!</strong>
+            <a href="{% url 'hows_the_weather:home' %}">Return to the homepage.</a><br />
+        {% else %}
+            <strong>Register here</strong><br />
+            <form id="user_form" method="POST" action="{% url 'hows_the_weather:register' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ user_form.as_p }}
+                {{ profile_form.as_p }}
+                <input type="submit" name="submit" value="Register" />
+            </form>
+        {% endif %}
+    {% endblock %}
+</html>
+{% comment %} todo: should immediately log the user in with the newly registered account

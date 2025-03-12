@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% extends 'hows_the_weather/base.html' %}
+{% load staticfiles %}
+
+<html>
+    <head>
+        {% block title_block %}
+            Login
+        {% endblock %}
+    </head>
+
+    {% block body_block %}
+        <h1>Login to Weather App</h1>
+        <form id="login_form" method="post" action="{% url 'hows_the_weather:login' %}">
+            {% csrf_token %}
+            Username: <input type="text" name="username" value="" size="50" />
+            <br />
+            Password: <input type="password" name="password" value="" size="50" />
+            <br />
+            <input type="submit" value="submit" />
+        </form>
+    {% endblock %}
+</html>
+
+{% comment %} todo: should AJAX a message saying you have logged out maybe but stay on the home page

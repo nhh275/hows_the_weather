@@ -12,8 +12,11 @@
 
     <ul>
         {% block sidebar_block %}
-            <a href="{% url 'hows-the-weather:home' %}">Home</a><br>
-            <a href="{% url 'hows-the-weather:my-profile' %}">Placeholder Profile</a><br>
+            <a href="{% url 'hows_the_weather:home' %}">Home</a><br>
+            <a href="{% url 'hows_the_weather:my-profile' %}">My Profile</a><br>
+            {% if user.is_authenticated %}
+            <a href="{% url 'hows_the_weather:logout' %}">Log Out</a><br>
+            {% endif %}
             <hr />
         {% endblock %}
     </ul>
