@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load staticfiles %}
+{% load static %}
 
 <html>
     <head>
@@ -8,6 +9,7 @@
                 Testing the Base HTML
             {% endblock %}
         </title>
+		<link rel="stylesheet" href="{% static 'stylesheet.css' %}">
     </head>
 
     <ul>
