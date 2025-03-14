@@ -19,7 +19,7 @@ def home(request):
 
 def my_weather(request):
     return HttpResponse("My Weather Page")
-
+    
 def my_profile(request):
     context_dict = {}
     context_dict['profile'] = None
