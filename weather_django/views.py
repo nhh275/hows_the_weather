@@ -30,7 +30,16 @@ def my_profile(request):
     return response
 
 def browse(request):
-    return HttpResponse("Browse Tab")
+    response = render(request, 'hows_the_weather/browse.html')
+    return response
+
+def location(request):
+    response = render(request, 'hows_the_weather/location.html')
+    return response
+
+def forum(request):
+    response = render(request, 'hows_the_weather/forum.html')
+    return response
 
 def saved_locations(request):
     response = render(request, 'hows_the_weather/saved_locations.html')

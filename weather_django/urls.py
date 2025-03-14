@@ -8,6 +8,8 @@ from weather_django import views
 app_name = 'hows_the_weather'
 
 
+#/<slug:location_name_slug>/ should be used for the location name
+
 urlpatterns = [
     path('', views.index, name='index'),
     path('home/', views.home, name='home'),
@@ -17,6 +19,11 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('login/', views.user_login, name='login'),
     path('browse/', views.browse, name='browse'),
+
+    # We need to replace this with /<slug:location_name_slug>/ eventually
+    path('location/', views.location, name='location'),
+    path('location/forum/', views.forum, name='forum'),
+
     path('logout/', views.user_logout, name='logout'),
 
 ]
