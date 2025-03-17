@@ -24,6 +24,7 @@ class Location(models.Model):
         return self.name
     
 class Forum(models.Model):
+    locationName = models.CharField(max_length=MAX_CHAR_LENGTH)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     max_comments = models.IntegerField(default=0)
     weather_data = models.CharField(max_length=MAX_CHAR_LENGTH)
