@@ -15,5 +15,15 @@
         <label for="test_textbox">Test Textbox:</label><br>
         <input type="text" id="test_textbox" name="test_textbox"><br>
         <hr />
+        {% if liked_locations %}
+            {% for location in liked_locations %}
+                <!--We need to find a way to implement the number-->
+                <a href="{% url 'hows_the_weather:location' location.slug %}">{{ location.name }}</a> <br>
+            {% endfor %}
+        {% else %}
+            No ratings yet!
+        {% endif %}
+        <hr />
+
     {% endblock %}
 </html>

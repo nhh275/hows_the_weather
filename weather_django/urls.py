@@ -21,8 +21,8 @@ urlpatterns = [
     path('browse/', views.browse, name='browse'),
 
     # We need to replace this with /<slug:location_name_slug>/ eventually
-    path('location/', views.location, name='location'),
-    path('location/forum/', views.forum, name='forum'),
+    path('<slug:location_name_slug>/', views.location, name='location'),
+    path('<slug:location_name_slug>/forum/', views.forum, name='forum'),
 
     path('logout/', views.user_logout, name='logout'),
 

@@ -24,7 +24,7 @@ class Location(models.Model):
         return self.name
     
 class Forum(models.Model):
-    locationName = models.CharField(max_length=maxCharLength)
+    locationName = models.CharField(max_length=MAX_CHAR_LENGTH)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)    
     max_comments = models.IntegerField(default=0)
     weather_data = models.CharField(max_length=MAX_CHAR_LENGTH)
@@ -46,7 +46,7 @@ class Comment(models.Model):
     # If the forum is deleted, the comments will be deleted form the db. as well.
     forum = models.ForeignKey(Forum, on_delete=models.CASCADE)
     user_id = models.IntegerField(null=True,blank=True)
-    text = models.CharField(max_length=maxReviewLength, null=True, blank=True)
+    text = models.CharField(max_length=MAX_REVIEW_LENGTH, null=True, blank=True)
     slug = models.SlugField()
     
     def save(self, *args, **kwargs):

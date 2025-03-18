@@ -4,10 +4,12 @@
 
 <html>
     {% block heading_block %}
-        Forum for [LOCATION]
+        Forum for {{ location }}
     {% endblock %}
 
     {% block body_block %}
-        Text Box idk
+        {% for comment in comments %}
+            {{ comment.username }}: {{ comment.text }} <br>
+        {% endfor %}
     {% endblock %}
 </html>

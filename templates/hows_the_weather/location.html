@@ -4,9 +4,10 @@
 
 <html>
     {% block body_block %}
-        Name: [Placeholder] <br>
+        Name: {{ location.name }} <br>
         Temp: [Placeholder] <br>
         Description: [Placeholder] <br>
-        Forum: <a href="{% url 'hows_the_weather:forum' %}">Below</a> <br>
+        Rating: {{ location.rating }} <br> 
+        Forum: <a href="{% url 'hows_the_weather:forum' location.slug %}">Below</a> <br>
     {% endblock %}
 </html>
