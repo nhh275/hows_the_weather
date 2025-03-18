@@ -36,7 +36,14 @@ def my_profile(request):
     return response
 
 def browse(request):
-    response = render(request, 'hows_the_weather/browse.html')
+    # We could separate liked_locations out of both browse and home so both
+    # pull from the same variable (for the day)
+    liked_locations = Location.objects.order_by('-rating')[:3]
+
+    context_dict = {}
+    context_dict['liked_locations'] = liked_locations
+
+    response = render(request, 'hows_the_weather/browse.html', context=context_dict)
     return response
 
 def location(request, location_name_slug):

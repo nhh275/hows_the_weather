@@ -8,11 +8,17 @@
     {% endblock %}
 
     {% block body_block %}
-        Help
+        (SECONDARY) SEARCHBAR (MAYBE) GOES HERE
 
         <h3>Top 3 Locations Today:</h3>
-        <a href="{% url 'hows_the_weather:location' %}">Placeholder</a>
-        Data Goes Here
+        {% if liked_locations %}
+            {% for location in liked_locations %}
+                <!--We need to find a way to implement the number-->
+                <a href="{% url 'hows_the_weather:location' location.slug %}">{{ location.name }}</a> <br>
+            {% endfor %}
+        {% else %}
+            No ratings yet!
+        {% endif %}
         <!-- We would need a 'daily ratings' system. If the system is populated,
           show something. If not, show nothing. -->
     {% endblock %}
