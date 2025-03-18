@@ -19,11 +19,12 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('login/', views.user_login, name='login'),
     path('browse/', views.browse, name='browse'),
+    path('logout/', views.user_logout, name='logout'),
 
-    # We need to replace this with /<slug:location_name_slug>/ eventually
+    # Unless we can implement the logout function inside of the text itself, this 
+    # HAS to be last in the list.
     path('<slug:location_name_slug>/', views.location, name='location'),
     path('<slug:location_name_slug>/forum/', views.forum, name='forum'),
 
-    path('logout/', views.user_logout, name='logout'),
 
 ]
