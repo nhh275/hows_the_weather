@@ -3,20 +3,15 @@
 {% load staticfiles %}
 
 <html>
-    <head>
-        {% block title_block %}
-            How’s The Weather Today?
-        {% endblock %}
-    </head>
+    {% block heading_block %}
+        Browse
+    {% endblock %}
 
     {% block body_block %}
-        <h2>The Most Subjective Weather Report you’ll ever need!</h2>
+        (SECONDARY) SEARCHBAR (MAYBE) GOES HERE
 
-		<div id="search">
-			<label>Search:</label><br>
-			<input type="text" name="searchbox"><br>
-		</div>
-        <hr />
+		<hr />
+        <h3>Top 3 Locations Today:</h3>
         {% if liked_locations %}
             {% for location in liked_locations %}
                 <!--We need to find a way to implement the number-->
@@ -25,6 +20,7 @@
         {% else %}
             <p>No ratings yet!</p>
         {% endif %}
-
+        <!-- We would need a 'daily ratings' system. If the system is populated,
+          show something. If not, show nothing. -->
     {% endblock %}
 </html>

@@ -1,15 +1,46 @@
+/* Global: */
+* {
+	font-family: 'Arial', sans-serif;
+	text-align: center;
+}
+
 body {
 	background-color: #F0F8FF;
 }
 
-h1, h2, h3, label, a {
+/* Searchbox: */
+input {
+	width: 400px;
+	height: 25px;
+}
+
+#search {
+	font-weight: bold;
+}
+
+/* Sidebar: */
+ul {
 	font-family: 'Arial', sans-serif;
+	font-size: 20px;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background-color: #483D8B;
 }
 
-h3 {
-	text-align: center;
+li {
+	float: left;
 }
 
-.search {
+li a {
+	display: block;
+	color: white;
 	text-align: center;
+	padding: 10px 12px;
+	text-decoration: none;
+}
+
+li a:hover {
+	background-color: #1E90FF;
 }

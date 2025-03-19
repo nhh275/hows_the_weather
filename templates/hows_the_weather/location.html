@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+{% extends 'hows_the_weather/base.html' %}
+{% load staticfiles %}
+
+<html>
+    {% block body_block %}
+        Name: {{ location.name }} <br>
+        Temp: [Placeholder] <br>
+        Description: [Placeholder] <br>
+        Rating: {{ location.rating }} <br> 
+        Forum: <a href="{% url 'hows_the_weather:forum' location.slug %}">Below</a> <br>
+    {% endblock %}
+</html>

@@ -1,45 +1,41 @@
 <!DOCTYPE html>
 {% load staticfiles %}
-{% load static %}
 
 <html>
     <head>
+		<link rel="stylesheet" href="{% static 'stylesheet.css' %}">
         <title>
             {% block title_block %}
-                Testing the Base HTML
+                How’s The Weather Today?
             {% endblock %}
         </title>
-		<link rel="stylesheet" href="{% static 'stylesheet.css' %}">
     </head>
 
-    <ul>
-        {% block sidebar_block %}
-            <a href="{% url 'hows_the_weather:home' %}">Home</a><br>
-            <a href="{% url 'hows_the_weather:my-profile' %}">My Profile</a><br>
-            {% if user.is_authenticated %}
-            <a href="{% url 'hows_the_weather:logout' %}">Log Out</a><br>
-            {% endif %}
-            <hr />
-        {% endblock %}
-    </ul>
+	{% block sidebar_block %}
+	<ul>
+		<li><a href="{% url 'hows_the_weather:home' %}">Home</a><li>
+		<li><a href="{% url 'hows_the_weather:my-profile' %}">My Profile</a></li>
+		<!-- THE BROWSE LINK SHOULD BE ON THE RIGHT OF THE SIDEBAR-->
+		<li><a href="{% url 'hows_the_weather:browse' %}">Browse</a></li>
+		{% if user.is_authenticated %}
+		<li><a href="{% url 'hows_the_weather:logout' %}">Log Out</a></li>
+		{% endif %}
+	</ul>
+	{% endblock %}
+	<hr />
     
 
     <h1>
         {% block heading_block %}
-            How's The Weather Today?
+            How’s The Weather Today?
         {% endblock %}
     </h1>
 
-    <body bgcolor="#8de8f4">
+    <body>
         {% block body_block %}
             Test Block
         {% endblock %}
     </body>
 
-    {% block bottom_block %}
-        <hr />
-        Browse Weather <br>
-        My Weather <br>
-        Saved Location <br>
-    {% endblock %}
+    <hr />
 </html>

@@ -14,7 +14,13 @@ def index(request):
     return redirect('/hows-the-weather/home/')
 
 def home(request):
-    response = render(request, 'hows_the_weather/home.html')
+    liked_locations = Location.objects.order_by('-rating')[:3]
+
+    context_dict = {}
+    context_dict['liked_locations'] = liked_locations
+
+    response = render(request, 'hows_the_weather/home.html', context=context_dict)
+
     # return HttpResponse("Home Page <a href='/hows-the-weather/my-weather/'>Test</a>")
     return response
 
@@ -30,7 +36,37 @@ def my_profile(request):
     return response
 
 def browse(request):
-    return HttpResponse("Browse Tab")
+    # We could separate liked_locations out of both browse and home so both
+    # pull from the same variable (for the day)
+    liked_locations = Location.objects.order_by('-rating')[:3]
+
+    context_dict = {}
+    context_dict['liked_locations'] = liked_locations
+
+    response = render(request, 'hows_the_weather/browse.html', context=context_dict)
+    return response
+
+def location(request, location_name_slug):
+    context_dict = {}
+    location = Location.objects.get(slug=location_name_slug)
+
+    context_dict['location'] = location
+
+    response = render(request, 'hows_the_weather/location.html', context=context_dict)
+    return response
+
+def forum(request, location_name_slug):
+    context_dict = {}
+
+    forum_used = Forum.objects.get(slug=location_name_slug)
+
+    comments = Comment.objects.filter(forum=forum_used)
+
+    context_dict['location'] = forum_used.location.name
+    context_dict['comments'] = comments
+
+    response = render(request, 'hows_the_weather/forum.html', context=context_dict)
+    return response
 
 def saved_locations(request):
     response = render(request, 'hows_the_weather/saved_locations.html')
