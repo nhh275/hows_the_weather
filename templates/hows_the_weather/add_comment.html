@@ -1,0 +1,22 @@
+{% extends 'hows_the_weather/base.html' %}
+<title>
+    {% block title_block %}
+    Add a Comment
+    {% endblock %}
+</title>
+{% block body_block %}
+        <h1>Add a Comment</h1>
+        <div>
+
+            <form id="comment_form" method="post" action="{% url 'hows_the_weather:add_comment' location_name_slug=forum.slug %}">
+                {% csrf_token %}
+                
+                {% for field in form.visible_fields %}
+                    {{ field.errors }}
+                    {{ field.help_text }}
+                    {{ field }}
+                {% endfor %}
+                <input type="submit" name="submit" value="Add Comment" />
+            </form>
+        </div>
+{% endblock %}
