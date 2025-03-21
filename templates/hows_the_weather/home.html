@@ -23,6 +23,10 @@
         {% else %}
             No ratings yet!
         {% endif %}
+
+        {% for test in weather %}
+            {{ test.date }}
+        {% endfor %}
         <hr />
 
     {% endblock %}

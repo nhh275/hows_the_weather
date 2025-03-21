@@ -4,14 +4,18 @@ from django.contrib import admin
 from django.urls import path
 from django.urls import include
 from weather_django import views
+from weather_django.views import asynchronous_view_test
+
+import asyncio 
+import os
 
 app_name = 'hows_the_weather'
-
 
 #/<slug:location_name_slug>/ should be used for the location name
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('test/', asynchronous_view_test, name='test'),
     path('home/', views.home, name='home'),
     path('my-weather/', views.my_weather, name='my-weather'),
     path('my-profile/', views.my_profile, name='my-profile'),
