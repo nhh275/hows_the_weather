@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.http import HttpResponse
-from weather_django.models import Location, Forum, UserProfile, Comment
+from weather_django.models import Location, Forum, UserProfile, Comment, SavedLocationsList
 from weather_django.forms import UserForm, UserProfileForm, CommentForm
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -130,11 +130,17 @@ def register(request):
             
             profile.save()
             registered = True
+
+            # When a user registers, we need to create a new SavedLocationList object
+            # that directly links to the User's ID
+            saved_locations = SavedLocationsList.objects.create(user=user)
+
         else:
             print(user_form.errors(), profile_form.errors())
     else:
         user_form = UserForm()
         profile_form = UserProfileForm()
+        saved_locations = SavedLocationsList()
     
     response = render(request, 'hows_the_weather/register.html', context={'user_form':user_form,
                                                                       'profile_form':profile_form,

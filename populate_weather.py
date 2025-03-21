@@ -3,12 +3,13 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hows_the_weather.settings')
 
 import django
 django.setup()
-from weather_django.models import Location, Forum, Comment
+from weather_django.models import Location, Forum, Comment, SavedLocationsList
 
 def populate():
     Comment.objects.all().delete()
     Forum.objects.all().delete()
     Location.objects.all().delete()
+    SavedLocationsList.objects.all().delete()
     
     forumVars = [
         {'max_comments':100,
