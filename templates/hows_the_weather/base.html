@@ -3,12 +3,14 @@
 
 <html>
     <head>
+		<link rel="stylesheet" href="{% static 'stylesheet.css' %}">
         <title>
             {% block title_block %}
-                Testing the Base HTML
+                How’s The Weather Today?
             {% endblock %}
         </title>
     </head>
+
 
     <ul>
         {% block sidebar_block %}
@@ -28,20 +30,15 @@
 
     <h1>
         {% block heading_block %}
-            How's The Weather Today?
+            How’s The Weather Today?
         {% endblock %}
     </h1>
 
-    <body bgcolor="#8de8f4">
+    <body>
         {% block body_block %}
             Test Block
         {% endblock %}
     </body>
 
-    {% block bottom_block %}
-        <hr />
-        Browse Weather <br>
-        My Weather <br>
-        Saved Location <br>
-    {% endblock %}
+    <hr />
 </html>

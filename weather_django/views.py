@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from weather_django.models import Location, Forum, UserProfile, Comment
-from weather_django.forms import UserForm, UserProfileForm
+from weather_django.forms import UserForm, UserProfileForm, CommentForm
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
@@ -51,6 +51,7 @@ def home(request):
     context_dict['liked_locations'] = liked_locations
     # context_dict['weather'] = weather
 
+
     response = render(request, 'hows_the_weather/home.html', context=context_dict)
 
     # return HttpResponse("Home Page <a href='/hows-the-weather/my-weather/'>Test</a>")
@@ -72,6 +73,7 @@ def browse(request):
     # pull from the same variable (for the day)
     liked_locations = get_top_three_locations_of_the_day()
 
+
     context_dict = {}
     context_dict['liked_locations'] = liked_locations
 
@@ -90,13 +92,19 @@ def location(request, location_name_slug):
 def forum(request, location_name_slug):
     context_dict = {}
 
-    forum_used = Forum.objects.get(slug=location_name_slug)
 
-    comments = Comment.objects.filter(forum=forum_used)
-
-    context_dict['location'] = forum_used.location.name
-    context_dict['comments'] = comments
-
+    try:
+        forum_used = Forum.objects.get(slug=location_name_slug)
+        comments = Comment.objects.filter(forum=forum_used)
+        
+        context_dict['forum'] = forum_used  
+        context_dict['location'] = forum_used.location.name
+        context_dict['comments'] = comments
+    except Forum.DoesNotExist:
+        forum_used = None  
+        context_dict['forum'] = None
+        context_dict['comments'] = None   
+             
     response = render(request, 'hows_the_weather/forum.html', context=context_dict)
     return response
 
@@ -155,3 +163,37 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect(reverse('hows_the_weather:home'))
+
+@login_required
+def add_comment(request, location_name_slug):
+    try:
+        forum = Forum.objects.get(slug=location_name_slug)
+    except Forum.DoesNotExist:
+        forum = None
+    
+    if forum is None:
+        return redirect('/weather_django/')
+    
+    print("Form 0")
+
+    form = CommentForm()
+    if request.method == 'POST':
+        print("Form 1")
+
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            print("Form valid")
+            #if forum:
+            comment = form.save(commit=False)
+            comment.forum = forum
+            comment.user_id = request.user.id
+            comment.username = request.user.username
+            comment.save()
+                
+            return redirect(reverse('weather_django:forum',kwargs={'location_name_slug':location_name_slug}))
+        else:
+            print(form.errors)
+    
+    context_dict = {'form': form, 'forum': forum}
+    context_dict['profile'] = UserProfile.objects.filter(user=request.user).first() if request.user.is_authenticated else None
+    return render(request, 'hows_the_weather/add_comment.html', context=context_dict)

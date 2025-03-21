@@ -10,6 +10,8 @@
     {% block body_block %}
         (SECONDARY) SEARCHBAR (MAYBE) GOES HERE
 
+		<hr />
+
         <h3>Top 3 Locations Today:</h3>
         {% if liked_locations %}
             {% for location in liked_locations %}
@@ -17,7 +19,8 @@
                 <a href="{% url 'hows_the_weather:location' location.slug %}">{{ location.name }}</a> <br>
             {% endfor %}
         {% else %}
-            No ratings yet!
+
+            <p>No ratings yet!</p>
         {% endif %}
         <!-- We would need a 'daily ratings' system. If the system is populated,
           show something. If not, show nothing. -->
