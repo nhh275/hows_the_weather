@@ -8,11 +8,9 @@
         <h1>Add a Comment</h1>
         <div>
 
-            <form id="comment_form" method="post" action="{% url 'hows_the_weather:add_comment' forum.slug %}">
+            <form id="comment_form" method="post" action="{% url 'hows_the_weather:add_comment' location_name_slug=forum.slug %}">
                 {% csrf_token %}
-                {% for hidden in form.hidden_fields %}
-                    {{ hidden }}
-                {% endfor %}
+                
                 {% for field in form.visible_fields %}
                     {{ field.errors }}
                     {{ field.help_text }}

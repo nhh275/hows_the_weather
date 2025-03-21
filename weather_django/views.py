@@ -139,20 +139,23 @@ def add_comment(request, location_name_slug):
     if forum is None:
         return redirect('/weather_django/')
     
+    print("Form 0")
+
     form = CommentForm()
     if request.method == 'POST':
+        print("Form 1")
+
         form = CommentForm(request.POST)
-        
         if form.is_valid():
-            if forum:
-                comment = form.save(commit=False)
-                comment.forum = forum
-                comment.views = 0
-                comment.user_id = request.user.id
-                comment.username = request.user.username
-                comment.save()
+            print("Form valid")
+            #if forum:
+            comment = form.save(commit=False)
+            comment.forum = forum
+            comment.user_id = request.user.id
+            comment.username = request.user.username
+            comment.save()
                 
-                return redirect(reverse('weather_django:forum',kwargs={'category_name_slug':location_name_slug}))
+            return redirect(reverse('weather_django:forum',kwargs={'location_name_slug':location_name_slug}))
         else:
             print(form.errors)
     

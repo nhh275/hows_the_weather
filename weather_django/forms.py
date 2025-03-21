@@ -16,7 +16,11 @@ class UserProfileForm(forms.ModelForm):
         
 class CommentForm(forms.ModelForm):
     text = forms.CharField(max_length=MAX_CHAR_LENGTH, help_text="Please enter your comment.")
-    #user_id = # get users id, pass in context dict? 
+    user_id = forms.CharField(widget = forms.HiddenInput(), required=False)
+    username = forms.CharField(widget = forms.HiddenInput(), required=False)
+    slug = forms.CharField(widget = forms.HiddenInput(), required=False)
+
+
     
     class Meta:
         model = Comment
