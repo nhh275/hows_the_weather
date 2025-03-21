@@ -20,9 +20,11 @@ urlpatterns = [
     path('login/', views.user_login, name='login'),
     path('browse/', views.browse, name='browse'),
     path('logout/', views.user_logout, name='logout'),
-
+    path('add_comment/', views.add_comment, name='add_comment'),
     # Unless we can implement the logout function inside of the text itself, this 
     # HAS to be last in the list.
+    path('<slug:location_name_slug>/add_comment/', views.add_comment, name='add_comment'),
+    path('hows-the-weather/<slug:location_name_slug>/add_comment/', views.add_comment, name='add_comment'),
     path('<slug:location_name_slug>/', views.location, name='location'),
     path('<slug:location_name_slug>/forum/', views.forum, name='forum'),
 
