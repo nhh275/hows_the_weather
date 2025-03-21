@@ -14,6 +14,10 @@
         {% block sidebar_block %}
             <a href="{% url 'hows_the_weather:home' %}">Home</a><br>
             <a href="{% url 'hows_the_weather:my-profile' %}">My Profile</a><br>
+            
+            <!-- THE BROWSE LINK SHOULD BE ON THE RIGHT OF THE SIDEBAR-->
+            <a href="{% url 'hows_the_weather:browse' %}">Browse</a><br>
+
             {% if user.is_authenticated %}
             <a href="{% url 'hows_the_weather:logout' %}">Log Out</a><br>
             {% endif %}

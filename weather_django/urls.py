@@ -8,6 +8,8 @@ from weather_django import views
 app_name = 'hows_the_weather'
 
 
+#/<slug:location_name_slug>/ should be used for the location name
+
 urlpatterns = [
     path('', views.index, name='index'),
     path('home/', views.home, name='home'),
@@ -18,5 +20,11 @@ urlpatterns = [
     path('login/', views.user_login, name='login'),
     path('browse/', views.browse, name='browse'),
     path('logout/', views.user_logout, name='logout'),
+
+    # Unless we can implement the logout function inside of the text itself, this 
+    # HAS to be last in the list.
+    path('<slug:location_name_slug>/', views.location, name='location'),
+    path('<slug:location_name_slug>/forum/', views.forum, name='forum'),
+
 
 ]

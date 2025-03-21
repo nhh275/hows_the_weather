@@ -20,6 +20,10 @@
             {% comment %} {% if profile and profile.picture %}
                 <!--<img src="{{ profile.picture.url }}" alt = "User profile picture">--> 
             {% endif %} {% endcomment %}
+
+            <!-- THIS SHOULD BE THE 'DETAILS' LINK OF THE URL!!!!! -->
+            Edit 
+            
         {% else %}
             You are not logged in.
             <a href="{% url 'hows_the_weather:register' %}">Register here</a>

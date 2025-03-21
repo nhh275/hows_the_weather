@@ -1,5 +1,5 @@
 from django import forms
-from weather_django.models import maxCharLength, UserProfile
+from weather_django.models import MAX_CHAR_LENGTH, UserProfile
 from django.contrib.auth.models import User
 
 class UserForm(forms.ModelForm):

@@ -1,16 +1,16 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
-maxCharLength = 128
-maxReviewLength = 256
+MAX_CHAR_LENGTH = 128
+MAX_REVIEW_LENGTH = 256
 # Create your models here.
 
 
 class Location(models.Model):
-    name = models.CharField(max_length=maxCharLength)
+    name = models.CharField(max_length=MAX_CHAR_LENGTH)
     location_forum = models.URLField(blank=False)
     rating = models.IntegerField(default=0)
-    weather_description = models.CharField(max_length=maxCharLength)
+    weather_description = models.CharField(max_length=MAX_CHAR_LENGTH)
     slug = models.SlugField(unique=True)
     
     def save(self, *args, **kwargs):
@@ -24,10 +24,10 @@ class Location(models.Model):
         return self.name
     
 class Forum(models.Model):
-    locationName = models.CharField(max_length=maxCharLength)
+    locationName = models.CharField(max_length=MAX_CHAR_LENGTH)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)    
     max_comments = models.IntegerField(default=0)
-    weather_data = models.CharField(max_length=maxCharLength)
+    weather_data = models.CharField(max_length=MAX_CHAR_LENGTH)
     slug = models.SlugField(unique=True)
     
     def save(self, *args, **kwargs):
@@ -41,10 +41,12 @@ class Forum(models.Model):
         return self.location.name
     
 class Comment(models.Model):
-    username = models.CharField(max_length=maxCharLength)
+    username = models.CharField(max_length=MAX_CHAR_LENGTH)
+
+    # If the forum is deleted, the comments will be deleted form the db. as well.
     forum = models.ForeignKey(Forum, on_delete=models.CASCADE)
     user_id = models.IntegerField(null=True,blank=True)
-    text = models.CharField(max_length=maxReviewLength, null=True, blank=True)
+    text = models.CharField(max_length=MAX_REVIEW_LENGTH, null=True, blank=True)
     slug = models.SlugField()
     
     def save(self, *args, **kwargs):

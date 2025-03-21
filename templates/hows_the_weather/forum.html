@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+{% extends 'hows_the_weather/base.html' %}
+{% load staticfiles %}
+
+<html>
+    {% block heading_block %}
+        Forum for {{ location }}
+    {% endblock %}
+
+    {% block body_block %}
+        {% for comment in comments %}
+            {{ comment.username }}: {{ comment.text }} <br>
+        {% endfor %}
+    {% endblock %}
+</html>
