@@ -5,15 +5,17 @@
 <html>
     <head>
         {% block title_block %}
-            How's The Weather Today?
+            How’s The Weather Today?
         {% endblock %}
     </head>
 
     {% block body_block %}
-        <h2>The Most Subjective Weather Report you'll ever need!</h2>
+        <h2>The Most Subjective Weather Report you’ll ever need!</h2>
 
-        <label for="test_textbox">Test Textbox:</label><br>
-        <input type="text" id="test_textbox" name="test_textbox"><br>
+		<div id="search">
+			<label>Search:</label><br>
+			<input type="text" name="searchbox"><br>
+		</div>
         <hr />
         {% if liked_locations %}
             {% for location in liked_locations %}
@@ -21,9 +23,8 @@
                 <a href="{% url 'hows_the_weather:location' location.slug %}">{{ location.name }}</a> <br>
             {% endfor %}
         {% else %}
-            No ratings yet!
+            <p>No ratings yet!</p>
         {% endif %}
-        <hr />
 
     {% endblock %}
 </html>
