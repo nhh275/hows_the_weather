@@ -1,6 +1,7 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import ArrayField
 MAX_CHAR_LENGTH = 128
 MAX_REVIEW_LENGTH = 256
 # Create your models here.
@@ -62,13 +63,11 @@ class Comment(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     picture = models.ImageField(upload_to='profile_images', blank=True)
+    saved_locations = ArrayField(models.CharField(max_length=MAX_CHAR_LENGTH))
 
-    # Might need some kind of set of locations, like:
-        # saved_locations = set()
-    
     def __str__(self):
         return self.user.username
     
-class SavedLocationsList(models.Model):
-    locations = models.ManyToManyField(Location)
-    user = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
+# class SavedLocationsList(models.Model):
+#     locations = models.ManyToManyField(Location)
+#     user = models.OneToOneField(UserProfile, on_delete=models.CASCADE)

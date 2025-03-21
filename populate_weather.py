@@ -9,7 +9,7 @@ def populate():
     Comment.objects.all().delete()
     Forum.objects.all().delete()
     Location.objects.all().delete()
-    SavedLocationsList.objects.all().delete()
+    # SavedLocationsList.objects.all().delete()
     
     forumVars = [
         {'max_comments':100,
