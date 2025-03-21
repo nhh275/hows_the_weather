@@ -8,16 +8,49 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
+from django.template.defaultfilters import slugify
+# from asgiref.sync import sync_to_async
+
+# import python_weather
+
+import asyncio
+import os
+
+def search_function_algorithm(search_input):
+    formatted_input = slugify(search_input)
+    locations = Location.objects.all()
+
+    returned_locations = []
+
+    for location in locations:
+        if locations.name.lower().startswith(formatted_input):
+            returned_locations.append(location)
+        continue
+
+    return returned_locations
 
 # Create your views here.
 def index(request):
     return redirect('/hows-the-weather/home/')
 
-def home(request):
-    liked_locations = Location.objects.order_by('-rating')[:3]
+# This doesn't work. Why does this not work. I'm genuinely mad
+async def asynchronous_view_test(request):
+    return HttpResponse("Async Test")
 
+def get_top_three_locations_of_the_day():
+    return Location.objects.order_by('-rating')[:3]
+
+def home(request):
     context_dict = {}
+    # async with python_weather.Client(unit=python_weather.IMPERIAL) as client:
+
+    #     weather = await client.get('Glasgow')
+    liked_locations = get_top_three_locations_of_the_day()
+
+    
     context_dict['liked_locations'] = liked_locations
+    # context_dict['weather'] = weather
+
 
     response = render(request, 'hows_the_weather/home.html', context=context_dict)
 
@@ -38,7 +71,8 @@ def my_profile(request):
 def browse(request):
     # We could separate liked_locations out of both browse and home so both
     # pull from the same variable (for the day)
-    liked_locations = Location.objects.order_by('-rating')[:3]
+    liked_locations = get_top_three_locations_of_the_day()
+
 
     context_dict = {}
     context_dict['liked_locations'] = liked_locations
@@ -57,6 +91,7 @@ def location(request, location_name_slug):
 
 def forum(request, location_name_slug):
     context_dict = {}
+
 
     try:
         forum_used = Forum.objects.get(slug=location_name_slug)

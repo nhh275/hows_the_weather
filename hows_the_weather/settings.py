@@ -70,7 +70,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'hows_the_weather.wsgi.application'
+# WSGI_APPLICATION = 'hows_the_weather.wsgi.application'
+ASGI_APPLICATION = 'hows_the_weather.asgi.application'
 
 
 # Database
