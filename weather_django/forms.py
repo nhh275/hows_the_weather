@@ -19,8 +19,6 @@ class CommentForm(forms.ModelForm):
     user_id = forms.CharField(widget = forms.HiddenInput(), required=False)
     username = forms.CharField(widget = forms.HiddenInput(), required=False)
     slug = forms.CharField(widget = forms.HiddenInput(), required=False)
-
-
     
     class Meta:
         model = Comment

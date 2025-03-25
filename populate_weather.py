@@ -3,7 +3,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hows_the_weather.settings')
 
 import django
 django.setup()
-from weather_django.models import Location, Forum, Comment, SavedLocationsList
+from weather_django.models import Location, Forum, Comment
 
 def populate():
     Comment.objects.all().delete()
