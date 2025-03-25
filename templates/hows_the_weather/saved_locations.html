@@ -9,5 +9,11 @@
          should be a textbox --> 
         <hr />
         Notes About the locations go here.
+
+        {% if saved_locations %}
+            Exists
+        {% else %}
+            Does not Exist
+        {% endif %}
     {% endblock %}
 </html>

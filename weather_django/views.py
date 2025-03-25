@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.http import HttpResponse
-from weather_django.models import Location, Forum, UserProfile, Comment, SavedLocationsList
+from weather_django.models import Location, Forum, UserProfile, Comment
 from weather_django.forms import UserForm, UserProfileForm, CommentForm
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -86,6 +86,8 @@ def location(request, location_name_slug):
 
     context_dict['location'] = location
 
+    # saved_location = UserProfile.objects.get("The current user")
+
     response = render(request, 'hows_the_weather/location.html', context=context_dict)
     return response
 
@@ -108,8 +110,20 @@ def forum(request, location_name_slug):
     response = render(request, 'hows_the_weather/forum.html', context=context_dict)
     return response
 
+def save_the_location(request):
+    
+    pass
+
 def saved_locations(request):
-    response = render(request, 'hows_the_weather/saved_locations.html')
+    saved = None 
+    if request.user.is_authenticated:
+        user = UserProfile.objects.filter(user=request.user).first()
+        saved = user.saved_locations
+
+    context_dict = {}
+    context_dict['saved_locations'] = saved
+
+    response = render(request, 'hows_the_weather/saved_locations.html', context=context_dict)
     return response
 
 def register(request):
@@ -133,14 +147,14 @@ def register(request):
 
             # When a user registers, we need to create a new SavedLocationList object
             # that directly links to the User's ID
-            saved_locations = SavedLocationsList.objects.create(user=user)
+            # saved_locations = SavedLocationsList.objects.create(user=user)
 
         else:
             print(user_form.errors(), profile_form.errors())
     else:
         user_form = UserForm()
         profile_form = UserProfileForm()
-        saved_locations = SavedLocationsList()
+        # saved_locations = SavedLocationsList()
     
     response = render(request, 'hows_the_weather/register.html', context={'user_form':user_form,
                                                                       'profile_form':profile_form,
@@ -203,3 +217,24 @@ def add_comment(request, location_name_slug):
     context_dict = {'form': form, 'forum': forum}
     context_dict['profile'] = UserProfile.objects.filter(user=request.user).first() if request.user.is_authenticated else None
     return render(request, 'hows_the_weather/add_comment.html', context=context_dict)
+
+def add_location(request, location_name_slug):
+    try:
+        location = Location.objects.get(slug=location_name_slug)
+    except Location.DoesNotExist:
+        location = None
+    
+    if location is None:
+        return redirect('/weather_django/')
+    
+    if request.user.is_authenticated:
+        user = UserProfile.objects.filter(user=request.user).first()
+        user.saved_locations.append(location_name_slug)
+        user.save()
+    
+
+    
+    context_dict = {}
+    context_dict['location'] = location
+    context_dict['profile'] = UserProfile.objects.filter(user=request.user).first() if request.user.is_authenticated else None
+    return render(request, 'hows_the_weather/home.html', context=context_dict)

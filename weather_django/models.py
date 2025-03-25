@@ -63,7 +63,7 @@ class Comment(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     picture = models.ImageField(upload_to='profile_images', blank=True)
-    saved_locations = ArrayField(models.CharField(max_length=MAX_CHAR_LENGTH))
+    saved_locations = ArrayField(models.CharField(max_length=MAX_CHAR_LENGTH), default=list, blank=True)
 
     def __str__(self):
         return self.user.username
