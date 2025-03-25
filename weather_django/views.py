@@ -139,6 +139,7 @@ def register(request):
             
             profile = profile_form.save(commit=False)
             profile.user = user
+            profile.saved_locations = ["https://example.com", "https://another-url.com"]
             if 'picture' in request.FILES:
                 profile.picture = request.FILES['picture']
             
@@ -149,16 +150,18 @@ def register(request):
             # that directly links to the User's ID
             # saved_locations = SavedLocationsList.objects.create(user=user)
 
+            #saved_locations, created = SavedLocationsList.objects.get_or_create(user=profile)
         else:
             print(user_form.errors(), profile_form.errors())
     else:
         user_form = UserForm()
         profile_form = UserProfileForm()
-        # saved_locations = SavedLocationsList()
+        #saved_locations = SavedLocationsList()
     
     response = render(request, 'hows_the_weather/register.html', context={'user_form':user_form,
                                                                       'profile_form':profile_form,
-                                                                      'registered':registered})
+                                                                      'registered':registered,
+                                                                      })
     return response
 
 def user_login(request):
