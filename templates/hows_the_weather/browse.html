@@ -8,8 +8,18 @@
     {% endblock %}
 
     {% block body_block %}
-        (SECONDARY) SEARCHBAR (MAYBE) GOES HERE
-
+        {% if search_query %}
+            Results: <br />
+            {% if results %}
+                {% for location in results %}
+                    <a href="{% url 'hows_the_weather:location' location.slug %}">{{ location.name }}</a> <br />
+                {% endfor %}
+            {% else %}
+                No Match! <br />
+            {% endif %}
+        {% else %}
+            Browse Locations
+        {% endif %}
 		<hr />
 
         <h3>Top 3 Locations Today:</h3>

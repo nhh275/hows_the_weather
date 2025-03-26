@@ -10,16 +10,23 @@
         Rating: {{ location.rating }} <br> 
         Forum: <a href="{% url 'hows_the_weather:forum' location.slug %}">Below</a> <br>
 
-        Save Location
-        <form id="comment_form" method="post" action="{% url 'hows_the_weather:location' location_name_slug=location.slug %}">
-            {% csrf_token %}
-            
-            {% for field in form.visible_fields %}
-                {{ field.errors }}
-                {{ field.help_text }}
-                {{ field }}
-            {% endfor %}
-            <input type="submit" name="save_location" value="Save Location" />
-        </form>
+        <!--We might need AJAX for the Real-Time Updates-->
+        {% if user.is_authenticated %}
+            Save Location
+            {% if is_in_saved_locations == False %}
+                <form id="comment_form" method="post" action="{% url 'hows_the_weather:location' location_name_slug=location.slug %}">
+                    {% csrf_token %}
+                    
+                    {% for field in form.visible_fields %}
+                        {{ field.errors }}
+                        {{ field.help_text }}
+                        {{ field }}
+                    {% endfor %}
+                    <input type="submit" name="save_location" value="Save Location" />
+                </form>
+            {% else %}
+                Already Saved!
+            {% endif %}
+        {% endif %}
     {% endblock %}
 </html>
