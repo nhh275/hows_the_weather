@@ -86,6 +86,10 @@ def location(request, location_name_slug):
 
     context_dict['location'] = location
 
+    if request.method == 'POST':
+        print("POST OK")
+        add_location(request, location_name_slug=location_name_slug)
+
     # saved_location = UserProfile.objects.get("The current user")
 
     response = render(request, 'hows_the_weather/location.html', context=context_dict)
@@ -221,19 +225,24 @@ def add_comment(request, location_name_slug):
     context_dict['profile'] = UserProfile.objects.filter(user=request.user).first() if request.user.is_authenticated else None
     return render(request, 'hows_the_weather/add_comment.html', context=context_dict)
 
+
+# How to Map this onto save_location button?
 def add_location(request, location_name_slug):
     try:
         location = Location.objects.get(slug=location_name_slug)
+        url = reverse("hows_the_weather:location", kwargs={'location_name_slug': location_name_slug})
     except Location.DoesNotExist:
         location = None
+        url = None
     
     if location is None:
         return redirect('/weather_django/')
     
     if request.user.is_authenticated:
-        user = UserProfile.objects.filter(user=request.user).first()
-        user.saved_locations.append(location_name_slug)
-        user.save()
+        if request.method == 'POST':
+            user = UserProfile.objects.filter(user=request.user).first()
+            user.saved_locations.append([location_name_slug, url])
+            user.save()
     
 
     

@@ -8,10 +8,12 @@
         <!-- When clicking on a saved location, it will drop-down your notes which 
          should be a textbox --> 
         <hr />
-        Notes About the locations go here.
+        Notes About the locations go here. <br />
 
         {% if saved_locations %}
-            Exists
+            {% for location in saved_locations %}
+                {{ location }}<br />
+            {% endfor %}
         {% else %}
             Does not Exist
         {% endif %}
