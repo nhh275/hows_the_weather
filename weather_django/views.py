@@ -114,15 +114,15 @@ def forum(request, location_name_slug):
     response = render(request, 'hows_the_weather/forum.html', context=context_dict)
     return response
 
-def save_the_location(request):
-    
-    pass
-
 def saved_locations(request):
     saved = None 
     if request.user.is_authenticated:
         user = UserProfile.objects.filter(user=request.user).first()
         saved = user.saved_locations
+
+    # if request.method == 'POST':
+    #     print("POST OK")
+    #     delete_location(request)
 
     context_dict = {}
     context_dict['saved_locations'] = saved
@@ -143,7 +143,9 @@ def register(request):
             
             profile = profile_form.save(commit=False)
             profile.user = user
-            profile.saved_locations = ["https://example.com", "https://another-url.com"]
+            # profile.saved_locations = ["https://example.com", "https://another-url.com"]
+            profile.saved_locations = []
+
             if 'picture' in request.FILES:
                 profile.picture = request.FILES['picture']
             
@@ -241,12 +243,33 @@ def add_location(request, location_name_slug):
     if request.user.is_authenticated:
         if request.method == 'POST':
             user = UserProfile.objects.filter(user=request.user).first()
-            user.saved_locations.append([location_name_slug, url])
-            user.save()
-    
 
+            city = {'name': location.name,
+                    'url': url,}
+            
+            user.saved_locations.append(city)
+            user.save()
     
     context_dict = {}
     context_dict['location'] = location
     context_dict['profile'] = UserProfile.objects.filter(user=request.user).first() if request.user.is_authenticated else None
     return render(request, 'hows_the_weather/home.html', context=context_dict)
+
+def delete_location(request, location_name_slug):
+    try:
+        location = Location.objects.get(slug=location_name_slug)
+        url = reverse("hows_the_weather:location", kwargs={'location_name_slug': location_name_slug})
+    except Location.DoesNotExist:
+        location = None
+        url = None
+
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            user = UserProfile.objects.filter(user=request.user).first()
+
+            for location in user.saved_locations:
+                if location['url'] == url:
+                    user.saved_locations.remove(location)
+                    break
+            
+            user.save()
