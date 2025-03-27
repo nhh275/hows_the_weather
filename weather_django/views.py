@@ -7,7 +7,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-
+import requests
 from django.template.defaultfilters import slugify
 
 def search_function_algorithm(search_input):
@@ -34,6 +34,7 @@ def get_top_three_locations_of_the_day():
     return Location.objects.order_by('-rating')[:3]
 
 def home(request):
+    #webbrowser.open("https://api.openweathermap.org/data/2.5/weather?q=petersfield,gb&appid=0bbf372223631fa46507a2dcae23e44e&mode=html")
     context_dict = {}
 
     liked_locations = get_top_three_locations_of_the_day()
@@ -78,7 +79,14 @@ def browse(request):
 def location(request, location_name_slug):
     context_dict = {}
     location = Location.objects.get(slug=location_name_slug)
-
+    
+    url = f"https://api.openweathermap.org/data/2.5/weather?q={location.name}&appid=0bbf372223631fa46507a2dcae23e44e&mode=json&units=metric"
+    response = requests.get(url)
+    if response.status_code == 200:
+        json_data = response.json()  # Convert JSON response to a Python dictionary
+    else:
+        json_data = {}  # Default empty dict if the request fails
+    
     if request.user.is_authenticated:
         is_saved = False
         user = UserProfile.objects.filter(user=request.user).first()
@@ -93,6 +101,7 @@ def location(request, location_name_slug):
 
     context_dict['is_in_saved_locations'] = is_saved
     context_dict['location'] = location
+    context_dict['json_data'] = json_data
 
     # The POST method refers to someone adding a location to their saved_location
     # parameter, which would be altering the database.
@@ -105,14 +114,12 @@ def location(request, location_name_slug):
 
 def forum(request, location_name_slug):
     context_dict = {}
-
-
     try:
         forum_used = Forum.objects.get(slug=location_name_slug)
         comments = Comment.objects.filter(forum=forum_used)
         
         context_dict['forum'] = forum_used  
-        context_dict['location'] = forum_used.location.name
+        context_dict['location'] = forum_used.location
         context_dict['comments'] = comments
     except Forum.DoesNotExist:
         forum_used = None  

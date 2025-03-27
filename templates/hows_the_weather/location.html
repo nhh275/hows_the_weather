@@ -4,14 +4,19 @@
 
 <html>
     {% block body_block %}
-        Name: {{ location.name }} <br>
+    {% if json_data|length > 0 %}
+
+        Name: {{ json_data.name }},{{ json_data.sys.country}} <br>
 
         <!--AJAX Should handle these 2 things-->
         <!--It should PULL the data from the API-->
         <!--And should ideally update daily depending on the day.-->
-        Temp: [Placeholder] <br>
-        Description: [Placeholder] <br>
-
+        Temp: {{ json_data.main.temp }}C <br>
+        Feels like: {{ json_data.main.feels_like }}C <br>
+        Pressure: {{ json_data.main.pressure }}Pa <br>
+        Humidity: {{ json_data.main.humidity }}% <br>
+        Wind speed: {{ json_data.wind.speed }}mph <br>
+        Description: {{ json_data.weather.0.description }} <br>
         Rating: {{ location.rating }} <br> 
         Forum: <a href="{% url 'hows_the_weather:forum' location.slug %}">Below</a> <br>
 
@@ -33,5 +38,8 @@
         {% else %}
             Already Saved!
         {% endif %}
+    {% else %}
+        <p>Location not found!</p>
+    {% endif %}
     {% endblock %}
 </html>
