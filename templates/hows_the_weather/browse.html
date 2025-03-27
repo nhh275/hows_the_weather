@@ -8,31 +8,41 @@
     {% endblock %}
 
     {% block body_block %}
+        <h2>Search Locations</h2>
+        <form method="GET" action="{% url 'hows_the_weather:browse' %}">
+            <input type="text" name="searchbox" placeholder="Search for a location..." value="{{ search_query }}">
+            <input type="submit" value="Search">
+        </form>
+        
         {% if search_query %}
-            Results: <br />
+            <h3>Results for "{{ search_query }}"</h3>
             {% if results %}
-                {% for location in results %}
-                    <a href="{% url 'hows_the_weather:location' location.slug %}">{{ location.name }}</a> <br />
-                {% endfor %}
+                <ul>
+                    {% for location in results %}
+                        <li>
+                            <a href="{% url 'hows_the_weather:location' location.slug %}">{{ location.name }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
             {% else %}
-                No Match! <br />
+                <p>No locations found for "{{ search_query }}".</p>
             {% endif %}
-        {% else %}
-            Browse Locations
         {% endif %}
-		<hr />
 
+        <hr />
+        
+        <!-- Top 3 Locations Section -->
         <h3>Top 3 Locations Today:</h3>
         {% if liked_locations %}
-            {% for location in liked_locations %}
-                <!--We need to find a way to implement the number-->
-                <a href="{% url 'hows_the_weather:location' location.slug %}">{{ location.name }}</a> <br>
-            {% endfor %}
+            <ul>
+                {% for location in liked_locations %}
+                    <li>
+                        <a href="{% url 'hows_the_weather:location' location.slug %}">{{ location.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
         {% else %}
-
             <p>No ratings yet!</p>
         {% endif %}
-        <!-- We would need a 'daily ratings' system. If the system is populated,
-          show something. If not, show nothing. -->
-    {% endblock %}
+            {% endblock %}
 </html>
