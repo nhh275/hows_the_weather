@@ -14,16 +14,12 @@
         {% if user.is_authenticated %}
             <h3>Name {{ user.username }}</h3>
             <h3>ID: {{ user.id }}</h3>
-            <h3>Saved Locations: <a href="{% url 'hows_the_weather:saved-locations' %}">Here!</a></h3>
-            About Me:
-            <input type="text" id="test_textbox" name="test_textbox"><br>
-            {% comment %} {% if profile and profile.picture %}
-                <!--<img src="{{ profile.picture.url }}" alt = "User profile picture">--> 
-            {% endif %} {% endcomment %}
+            <h3><a href="{% url 'hows_the_weather:saved-locations' %}">Saved Locations</a></h3>
 
             <!-- THIS SHOULD BE THE 'DETAILS' LINK OF THE URL!!!!! -->
-            Edit 
-            
+            Edit (TODO)
+            <br>
+            <h3><a href="{% url 'hows_the_weather:logout' %}">Log Out</a></h3><br>
         {% else %}
             <p>You are not logged in.</p>
             <a href="{% url 'hows_the_weather:register' %}">Register here</a>

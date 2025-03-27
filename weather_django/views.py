@@ -6,6 +6,7 @@ from weather_django.forms import UserForm, UserProfileForm, CommentForm
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 import requests
 from django.template.defaultfilters import slugify
@@ -155,34 +156,30 @@ def register(request):
     if request.method == 'POST':
         user_form = UserForm(request.POST)
         profile_form = UserProfileForm(request.POST)
-        
+
         if user_form.is_valid() and profile_form.is_valid():
-            user = user_form.save()
-            user.set_password(user.password)
-            user.save()
-            
-            profile = profile_form.save(commit=False)
-            profile.user = user
-            # profile.saved_locations = ["https://example.com", "https://another-url.com"]
-            profile.saved_locations = []
+            username = user_form.cleaned_data['username']
+            if User.objects.filter(username=username).exists() == False:
 
-            if 'picture' in request.FILES:
-                profile.picture = request.FILES['picture']
-            
-            profile.save()
-            registered = True
+                user = user_form.save()
+                user.set_password(user.password)
+                user.save()
+                
+                profile = profile_form.save(commit=False)
+                profile.user = user
+                profile.saved_locations = []
 
-            # When a user registers, we need to create a new SavedLocationList object
-            # that directly links to the User's ID
-            # saved_locations = SavedLocationsList.objects.create(user=user)
-
-            #saved_locations, created = SavedLocationsList.objects.get_or_create(user=profile)
+                if 'picture' in request.FILES:
+                    profile.picture = request.FILES['picture']
+                
+                profile.save()
+                registered = True
+                login(request, authenticate(username=username,password=user_form.cleaned_data['password']))
         else:
-            print(user_form.errors(), profile_form.errors())
+            print(user_form.errors, profile_form.errors)
     else:
         user_form = UserForm()
         profile_form = UserProfileForm()
-        #saved_locations = SavedLocationsList()
     
     response = render(request, 'hows_the_weather/register.html', context={'user_form':user_form,
                                                                       'profile_form':profile_form,
@@ -204,7 +201,8 @@ def user_login(request):
                 return HttpResponse("Your Weather account is disabled.")
         else:
             print(f"Invalid login details: {username}, {password}")
-            return HttpResponse("Invalid login details supplied.")
+            return redirect(reverse('hows_the_weather:home'))
+
     else:
         return render(request, 'hows_the_weather/login.html')
 
