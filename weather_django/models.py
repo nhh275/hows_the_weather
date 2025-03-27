@@ -11,7 +11,12 @@ MAX_REVIEW_LENGTH = 256
 class Location(models.Model):
     name = models.CharField(max_length=MAX_CHAR_LENGTH)
     location_forum = models.URLField(blank=False)
+
+    #Can probably be renamed for clarity on average-calculation
     rating = models.IntegerField(default=0)
+    # Keep the below commented until we know how to properly implement it
+    # people_voted = models.IntegerField(default=0)
+
     weather_description = models.CharField(max_length=MAX_CHAR_LENGTH)
     slug = models.SlugField(unique=True)
     
@@ -76,9 +81,3 @@ class UserProfile(models.Model):
         self.urls = json.dumps(url_list)
         self.save()
     
-# class SavedLocationsList(models.Model):
-#     locations = models.ManyToManyField(Location)
-#     user = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
-
-#     def __str__(self):
-#         return f"Saved Locations for {self.user}"

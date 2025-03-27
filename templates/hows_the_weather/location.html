@@ -20,6 +20,18 @@
         Rating: {{ location.rating }} <br> 
         Forum: <a href="{% url 'hows_the_weather:forum' location.slug %}">Below</a> <br>
 
+        <input type="radio" id="rate1" name="rating" value="1">
+        <label for="rate1">1</label><br>
+        <input type="radio" id="rate2" name="rating" value="2">
+        <label for="rate2">2</label><br>
+        <input type="radio" id="rate3" name="rating" value="3">
+        <label for="rate3">3</label><br>
+        <input type="radio" id="rate4" name="rating" value="4">
+        <label for="rate4">4</label><br>
+        <input type="radio" id="rate5" name="rating" value="5">
+        <label for="rate5">5</label><br>
+        <!--Submit button goes below. -->
+
         <!--We might need AJAX for the Real-Time Updates-->
         {% if is_in_saved_locations == False %}
             {% if user.is_authenticated %}
