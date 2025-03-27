@@ -9,22 +9,18 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 import requests
+import os
 from django.template.defaultfilters import slugify
 from dotenv import load_dotenv
 load_dotenv()
 
 def search_function_algorithm(search_input):
-    formatted_input = slugify(search_input)
-    locations = Location.objects.all()
+    starts_with = Location.objects.filter(slug__startswith=search_input)
+    contains = Location.objects.filter(slug__icontains=search_input)
 
-    returned_locations = []
+    locations = set(starts_with).union(set(contains))
 
-    for location in locations:
-        if locations.name.lower().startswith(formatted_input):
-            returned_locations.append(location)
-        continue
-
-    return returned_locations
+    return locations
 
 # Create your views here.
 def index(request):
@@ -70,7 +66,8 @@ def browse(request):
     query = request.GET.get('searchbox')
     if query:
         context_dict['search_query'] = slugify(query)
-        results = Location.objects.filter(slug__icontains=context_dict['search_query'])
+        # results = Location.objects.filter(slug__icontains=context_dict['search_query'])
+        results = search_function_algorithm(context_dict['search_query'])
         context_dict['results'] = results
     else:
         context_dict['search_query'] = None
