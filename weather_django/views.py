@@ -138,11 +138,22 @@ def location(request, location_name_slug):
 
     # POST request handling
     if request.method == 'POST':
-        add_location(request, location_name_slug=location_name_slug)
+        # PSEUDOCODE FOR THE RATING SYSTEM
+            # if the request came from the rating systems
+            # obtain the rating from the request (call it 'rating')
+            # location.rating += rating
+            # location.people_voted++ 
+            # location.save()
+        if "save_location" in request.POST:
+            print("Achieved")
+            add_location(request, location_name_slug=location_name_slug)
+        elif "rate" in request.POST:
+            print("RATING CASE PASSED")
 
     response = render(request, 'hows_the_weather/location.html', context=context_dict)
     return response
 
+# def add_rating(requet, )
 
 def forum(request, location_name_slug):
     context_dict = {}
