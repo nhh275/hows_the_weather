@@ -255,12 +255,12 @@ def add_location(request, location_name_slug):
     if request.user.is_authenticated:
         if request.method == 'POST':
             user = UserProfile.objects.filter(user=request.user).first()
-
+            
             city = {'name': location.name,
                     'url': url,}
-            
-            user.saved_locations.append(city)
-            user.save()
+            if city not in user.saved_locations:
+                user.saved_locations.append(city)
+                user.save()
     
     context_dict = {}
     context_dict['location'] = location
@@ -269,20 +269,29 @@ def add_location(request, location_name_slug):
 
 def delete_location(request, location_name):
     try:
+        #print("ONE")
         location = Location.objects.get(name=location_name)
         location_name_slug = location.slug
         url = reverse("hows_the_weather:location", kwargs={'location_name_slug': location_name_slug})
     except Location.DoesNotExist:
+        #print("TWO")
+
         location = None
         url = None
 
     if request.user.is_authenticated:
+        #print("THREE")
+
         if request.method == 'POST':
+            #print("FOUR")
+
             user = UserProfile.objects.filter(user=request.user).first()
 
             for location in user.saved_locations:
+                #print(location['url'] == url, location, " FIVE")
                 if location['url'] == url:
                     user.saved_locations.remove(location)
+                    #print("REMOVED SIX")
                     break
             
             user.save()
