@@ -27,7 +27,6 @@ def search_function_algorithm(search_input):
 def index(request):
     return redirect('/hows-the-weather/home/')
 
-# This doesn't work. Why does this not work.
 async def asynchronous_view_test(request):
     return HttpResponse("Async Test")
 
@@ -39,6 +38,8 @@ def home(request):
 
     liked_locations = get_top_three_locations_of_the_day()
     context_dict['liked_locations'] = liked_locations
+    # context_dict['weather'] = weather
+
 
     response = render(request, 'hows_the_weather/home.html', context=context_dict)
     return response
@@ -59,7 +60,6 @@ def browse(request):
     # We could separate liked_locations out of both browse and home so both
     # pull from the same variable (for the day)
     liked_locations = get_top_three_locations_of_the_day()
-
     context_dict = {}
     context_dict['liked_locations'] = liked_locations
 
@@ -105,6 +105,7 @@ def location(request, location_name_slug):
 
 def forum(request, location_name_slug):
     context_dict = {}
+
 
     try:
         forum_used = Forum.objects.get(slug=location_name_slug)
