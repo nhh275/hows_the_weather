@@ -42,4 +42,5 @@ urlpatterns = [
     # path('<slug:location_name_slug>/forum/', views.forum, name='forum'),
 
 
+
 ]

@@ -29,7 +29,6 @@ def search_function_algorithm(search_input):
 def index(request):
     return redirect('/hows-the-weather/home/')
 
-# This doesn't work. Why does this not work.
 async def asynchronous_view_test(request):
     return HttpResponse("Async Test")
 
@@ -41,6 +40,8 @@ def home(request):
 
     liked_locations = get_top_three_locations_of_the_day()
     context_dict['liked_locations'] = liked_locations
+    # context_dict['weather'] = weather
+
 
     response = render(request, 'hows_the_weather/home.html', context=context_dict)
     return response
@@ -61,7 +62,6 @@ def browse(request):
     # We could separate liked_locations out of both browse and home so both
     # pull from the same variable (for the day)
     liked_locations = get_top_three_locations_of_the_day()
-
     context_dict = {}
     context_dict['liked_locations'] = liked_locations
 
@@ -107,6 +107,7 @@ def location(request, location_name_slug):
 
 def forum(request, location_name_slug):
     context_dict = {}
+
 
     try:
         forum_used = Forum.objects.get(slug=location_name_slug)
@@ -257,12 +258,12 @@ def add_location(request, location_name_slug):
     if request.user.is_authenticated:
         if request.method == 'POST':
             user = UserProfile.objects.filter(user=request.user).first()
-
+            
             city = {'name': location.name,
                     'url': url,}
-            
-            user.saved_locations.append(city)
-            user.save()
+            if city not in user.saved_locations:
+                user.saved_locations.append(city)
+                user.save()
     
     context_dict = {}
     context_dict['location'] = location
@@ -271,20 +272,29 @@ def add_location(request, location_name_slug):
 
 def delete_location(request, location_name):
     try:
+        #print("ONE")
         location = Location.objects.get(name=location_name)
         location_name_slug = location.slug
         url = reverse("hows_the_weather:location", kwargs={'location_name_slug': location_name_slug})
     except Location.DoesNotExist:
+        #print("TWO")
+
         location = None
         url = None
 
     if request.user.is_authenticated:
+        #print("THREE")
+
         if request.method == 'POST':
+            #print("FOUR")
+
             user = UserProfile.objects.filter(user=request.user).first()
 
             for location in user.saved_locations:
+                #print(location['url'] == url, location, " FIVE")
                 if location['url'] == url:
                     user.saved_locations.remove(location)
+                    #print("REMOVED SIX")
                     break
             
             user.save()

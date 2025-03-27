@@ -16,9 +16,9 @@
         Forum: <a href="{% url 'hows_the_weather:forum' location.slug %}">Below</a> <br>
 
         <!--We might need AJAX for the Real-Time Updates-->
-        {% if user.is_authenticated %}
+        {% if is_in_saved_locations == False %}
+            {% if user.is_authenticated %}
             Save Location
-            {% if is_in_saved_locations == False %}
                 <form id="comment_form" method="post" action="{% url 'hows_the_weather:location' location_name_slug=location.slug %}">
                     {% csrf_token %}
                     
@@ -29,9 +29,9 @@
                     {% endfor %}
                     <input type="submit" name="save_location" value="Save Location" />
                 </form>
-            {% else %}
-                Already Saved!
             {% endif %}
+        {% else %}
+            Already Saved!
         {% endif %}
     {% endblock %}
 </html>
