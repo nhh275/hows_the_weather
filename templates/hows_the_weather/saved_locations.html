@@ -8,6 +8,28 @@
         <!-- When clicking on a saved location, it will drop-down your notes which 
          should be a textbox --> 
         <hr />
-        Notes About the locations go here.
+        Notes About the locations go here. <br />
+
+        {% if saved_locations %}
+            {% for location in saved_locations %}
+                <a href="{{ location.url }}">{{ location.name }}</a>
+                <form id="delete_form" method="post" action="{% url 'hows_the_weather:saved-locations' %}">
+                    {% csrf_token %}
+                    
+                    {% for field in form.visible_fields %}
+                        {{ field.errors }}
+                        {{ field.help_text }}
+                        {{ field }}
+                    {% endfor %}
+                    
+                    <!--Hidden Input will be used to extract the actual name to use-->
+                    <input type="hidden" name="location_name" value="{{ location.name }}" />
+                    <input type="submit" name="remove_location" value="Remove Location" />
+                </form>
+                <br />
+            {% endfor %}
+        {% else %}
+            Does not Exist
+        {% endif %}
     {% endblock %}
 </html>

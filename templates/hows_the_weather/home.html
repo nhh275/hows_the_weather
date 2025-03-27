@@ -14,7 +14,9 @@
 
 		<div id="search">
 			<label>Search:</label><br>
-			<input type="text" name="searchbox"><br>
+            <form method="GET" action="{% url 'hows_the_weather:browse' %}" id="searchform">
+                <input type="text" name="searchbox" value="{{ request.GET.searchbox }}"><br>
+            </form>
 		</div>
         <hr />
         {% if liked_locations %}

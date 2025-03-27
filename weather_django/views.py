@@ -9,12 +9,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from django.template.defaultfilters import slugify
-# from asgiref.sync import sync_to_async
-
-# import python_weather
-
-import asyncio
-import os
 
 def search_function_algorithm(search_input):
     formatted_input = slugify(search_input)
@@ -33,7 +27,6 @@ def search_function_algorithm(search_input):
 def index(request):
     return redirect('/hows-the-weather/home/')
 
-# This doesn't work. Why does this not work. I'm genuinely mad
 async def asynchronous_view_test(request):
     return HttpResponse("Async Test")
 
@@ -42,21 +35,16 @@ def get_top_three_locations_of_the_day():
 
 def home(request):
     context_dict = {}
-    # async with python_weather.Client(unit=python_weather.IMPERIAL) as client:
 
-    #     weather = await client.get('Glasgow')
     liked_locations = get_top_three_locations_of_the_day()
-
-    
     context_dict['liked_locations'] = liked_locations
     # context_dict['weather'] = weather
 
 
     response = render(request, 'hows_the_weather/home.html', context=context_dict)
-
-    # return HttpResponse("Home Page <a href='/hows-the-weather/my-weather/'>Test</a>")
     return response
 
+# Not Needed?
 def my_weather(request):
     return HttpResponse("My Weather Page")
 
@@ -72,10 +60,17 @@ def browse(request):
     # We could separate liked_locations out of both browse and home so both
     # pull from the same variable (for the day)
     liked_locations = get_top_three_locations_of_the_day()
-
-
     context_dict = {}
     context_dict['liked_locations'] = liked_locations
+
+    query = request.GET.get('searchbox')
+    if query:
+        context_dict['search_query'] = slugify(query)
+        results = Location.objects.filter(slug__icontains=context_dict['search_query'])
+        context_dict['results'] = results
+    else:
+        context_dict['search_query'] = None
+        context_dict['results'] = None
 
     response = render(request, 'hows_the_weather/browse.html', context=context_dict)
     return response
@@ -84,7 +79,26 @@ def location(request, location_name_slug):
     context_dict = {}
     location = Location.objects.get(slug=location_name_slug)
 
+    if request.user.is_authenticated:
+        is_saved = False
+        user = UserProfile.objects.filter(user=request.user).first()
+        saved = user.saved_locations
+
+        for saved_location in saved:
+            if saved_location['name'] == location.name:
+                is_saved = True
+                break
+    else:
+        is_saved = False
+
+    context_dict['is_in_saved_locations'] = is_saved
     context_dict['location'] = location
+
+    # The POST method refers to someone adding a location to their saved_location
+    # parameter, which would be altering the database.
+    if request.method == 'POST':
+        print("POST OK")
+        add_location(request, location_name_slug=location_name_slug)
 
     response = render(request, 'hows_the_weather/location.html', context=context_dict)
     return response
@@ -109,7 +123,24 @@ def forum(request, location_name_slug):
     return response
 
 def saved_locations(request):
-    response = render(request, 'hows_the_weather/saved_locations.html')
+    saved = None 
+    if request.user.is_authenticated:
+        user = UserProfile.objects.filter(user=request.user).first()
+        saved = user.saved_locations
+
+    context_dict = {}
+    context_dict['saved_locations'] = saved
+
+    if request.method == 'POST':
+        print("POST OK")
+
+        location_name = request.POST.get('location_name')
+
+        if location_name:
+            print(location_name)
+            delete_location(request, location_name=location_name)
+
+    response = render(request, 'hows_the_weather/saved_locations.html', context=context_dict)
     return response
 
 def register(request):
@@ -125,20 +156,31 @@ def register(request):
             
             profile = profile_form.save(commit=False)
             profile.user = user
+            # profile.saved_locations = ["https://example.com", "https://another-url.com"]
+            profile.saved_locations = []
+
             if 'picture' in request.FILES:
                 profile.picture = request.FILES['picture']
             
             profile.save()
             registered = True
+
+            # When a user registers, we need to create a new SavedLocationList object
+            # that directly links to the User's ID
+            # saved_locations = SavedLocationsList.objects.create(user=user)
+
+            #saved_locations, created = SavedLocationsList.objects.get_or_create(user=profile)
         else:
             print(user_form.errors(), profile_form.errors())
     else:
         user_form = UserForm()
         profile_form = UserProfileForm()
+        #saved_locations = SavedLocationsList()
     
     response = render(request, 'hows_the_weather/register.html', context={'user_form':user_form,
                                                                       'profile_form':profile_form,
-                                                                      'registered':registered})
+                                                                      'registered':registered,
+                                                                      })
     return response
 
 def user_login(request):
@@ -197,3 +239,60 @@ def add_comment(request, location_name_slug):
     context_dict = {'form': form, 'forum': forum}
     context_dict['profile'] = UserProfile.objects.filter(user=request.user).first() if request.user.is_authenticated else None
     return render(request, 'hows_the_weather/add_comment.html', context=context_dict)
+
+
+# Function for adding a location.
+def add_location(request, location_name_slug):
+    try:
+        location = Location.objects.get(slug=location_name_slug)
+        url = reverse("hows_the_weather:location", kwargs={'location_name_slug': location_name_slug})
+    except Location.DoesNotExist:
+        location = None
+        url = None
+    
+    if location is None:
+        return redirect('/weather_django/')
+    
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            user = UserProfile.objects.filter(user=request.user).first()
+            
+            city = {'name': location.name,
+                    'url': url,}
+            if city not in user.saved_locations:
+                user.saved_locations.append(city)
+                user.save()
+    
+    context_dict = {}
+    context_dict['location'] = location
+    context_dict['profile'] = UserProfile.objects.filter(user=request.user).first() if request.user.is_authenticated else None
+    return render(request, 'hows_the_weather/home.html', context=context_dict)
+
+def delete_location(request, location_name):
+    try:
+        #print("ONE")
+        location = Location.objects.get(name=location_name)
+        location_name_slug = location.slug
+        url = reverse("hows_the_weather:location", kwargs={'location_name_slug': location_name_slug})
+    except Location.DoesNotExist:
+        #print("TWO")
+
+        location = None
+        url = None
+
+    if request.user.is_authenticated:
+        #print("THREE")
+
+        if request.method == 'POST':
+            #print("FOUR")
+
+            user = UserProfile.objects.filter(user=request.user).first()
+
+            for location in user.saved_locations:
+                #print(location['url'] == url, location, " FIVE")
+                if location['url'] == url:
+                    user.saved_locations.remove(location)
+                    #print("REMOVED SIX")
+                    break
+            
+            user.save()

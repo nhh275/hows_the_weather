@@ -8,27 +8,31 @@
     {% endblock %}
 
     {% block body_block %}
-    <p>Forum Slug: {{ forum.slug }}</p>
-    {% if forum and forum.slug %}
-    <a href="{% url 'hows_the_weather:add_comment' location_name_slug=forum.slug %}" class="btn btn-primary">
-        Add Comment
-    </a>
-    {% else %}
-    <p>Error: Forum slug is missing.</p>
-    {% endif %}
-
-    <br />
-    <br />
-        {% if comments %}
-        <div class="comments-section">
-            {% for comment in comments %}
-                <div class="comment">
-                    <p><strong>{{ comment.username }}</strong>: {{ comment.text }}</p>
-                </div>
-            {% endfor %}
-        </div>
+        <!--<p>Forum Slug: {{ forum.slug }}</p>-->
+        {% if forum and forum.slug %}
+            {% if user.is_authenticated %}
+            <a href="{% url 'hows_the_weather:add_comment' location_name_slug=forum.slug %}" class="btn btn-primary">
+                Add Comment
+            </a>
+            {% else %}
+                You are not logged in!
+            {% endif %}
         {% else %}
-        <p>No comments yet.</p>
+        <p>Error: Forum slug is missing.</p>
         {% endif %}
+
+        <br />
+        <br />
+            {% if comments %}
+            <div class="comments-section">
+                {% for comment in comments %}
+                    <div class="comment">
+                        <p><strong>{{ comment.username }}</strong>: {{ comment.text }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>No comments yet.</p>
+            {% endif %}
     {% endblock %}
 </html>

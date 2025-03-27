@@ -1,4 +1,6 @@
+import json
 from django.db import models
+from jsonfield import JSONField
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 MAX_CHAR_LENGTH = 128
@@ -62,8 +64,21 @@ class Comment(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     picture = models.ImageField(upload_to='profile_images', blank=True)
-    # Might need some kind of set of locations, like:
-        # saved_locations = set()
-    
+    saved_locations = JSONField(default=list, blank=True)  # Store URLs as a list
+
     def __str__(self):
         return self.user.username
+    
+    def get_urls(self):
+        return json.loads(self.saved_locations)
+    
+    def set_urls(self, url_list):
+        self.urls = json.dumps(url_list)
+        self.save()
+    
+# class SavedLocationsList(models.Model):
+#     locations = models.ManyToManyField(Location)
+#     user = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
+
+#     def __str__(self):
+#         return f"Saved Locations for {self.user}"

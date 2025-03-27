@@ -14,7 +14,7 @@
         {% if user.is_authenticated %}
             <h3>Name {{ user.username }}</h3>
             <h3>ID: {{ user.id }}</h3>
-            <h3>Location: <a href="{% url 'hows_the_weather:saved-locations' %}">Placeholder</a></h3>
+            <h3>Saved Locations: <a href="{% url 'hows_the_weather:saved-locations' %}">Here!</a></h3>
             About Me:
             <input type="text" id="test_textbox" name="test_textbox"><br>
             {% comment %} {% if profile and profile.picture %}
