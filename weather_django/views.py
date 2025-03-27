@@ -10,6 +10,8 @@ from django.contrib.auth.decorators import login_required
 
 from django.template.defaultfilters import slugify
 
+import requests
+
 def search_function_algorithm(search_input):
     formatted_input = slugify(search_input)
     locations = Location.objects.all()
