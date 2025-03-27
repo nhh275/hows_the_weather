@@ -5,8 +5,13 @@
 <html>
     {% block body_block %}
         Name: {{ location.name }} <br>
+
+        <!--AJAX Should handle these 2 things-->
+        <!--It should PULL the data from the API-->
+        <!--And should ideally update daily depending on the day.-->
         Temp: [Placeholder] <br>
         Description: [Placeholder] <br>
+
         Rating: {{ location.rating }} <br> 
         Forum: <a href="{% url 'hows_the_weather:forum' location.slug %}">Below</a> <br>
 

@@ -13,9 +13,6 @@
         {% if saved_locations %}
             {% for location in saved_locations %}
                 <a href="{{ location.url }}">{{ location.name }}</a>
-                <!--This currently does nothing.-->
-                <!--{{ location.url }} should somehow be passed in, but this cannot be done if-->
-                <!--The parameters for saved_locations() remain the same.-->
                 <form id="delete_form" method="post" action="{% url 'hows_the_weather:saved-locations' %}">
                     {% csrf_token %}
                     
@@ -25,6 +22,7 @@
                         {{ field }}
                     {% endfor %}
                     
+                    <!--Hidden Input will be used to extract the actual name to use-->
                     <input type="hidden" name="location_name" value="{{ location.name }}" />
                     <input type="submit" name="remove_location" value="Remove Location" />
                 </form>

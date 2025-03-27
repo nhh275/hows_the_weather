@@ -27,7 +27,7 @@ def search_function_algorithm(search_input):
 def index(request):
     return redirect('/hows-the-weather/home/')
 
-# This doesn't work. Why does this not work. I'm genuinely mad
+# This doesn't work. Why does this not work.
 async def asynchronous_view_test(request):
     return HttpResponse("Async Test")
 
@@ -36,21 +36,14 @@ def get_top_three_locations_of_the_day():
 
 def home(request):
     context_dict = {}
-    # async with python_weather.Client(unit=python_weather.IMPERIAL) as client:
 
-    #     weather = await client.get('Glasgow')
     liked_locations = get_top_three_locations_of_the_day()
-
-    
     context_dict['liked_locations'] = liked_locations
-    # context_dict['weather'] = weather
-
 
     response = render(request, 'hows_the_weather/home.html', context=context_dict)
-
-    # return HttpResponse("Home Page <a href='/hows-the-weather/my-weather/'>Test</a>")
     return response
 
+# Not Needed?
 def my_weather(request):
     return HttpResponse("My Weather Page")
 
@@ -67,7 +60,6 @@ def browse(request):
     # pull from the same variable (for the day)
     liked_locations = get_top_three_locations_of_the_day()
 
-
     context_dict = {}
     context_dict['liked_locations'] = liked_locations
 
@@ -79,8 +71,6 @@ def browse(request):
     else:
         context_dict['search_query'] = None
         context_dict['results'] = None
-
-        # reverse('weather_django:forum',kwargs={'location_name_slug':location_name_slug})
 
     response = render(request, 'hows_the_weather/browse.html', context=context_dict)
     return response
@@ -100,18 +90,15 @@ def location(request, location_name_slug):
                 break
     else:
         is_saved = False
-    
-    print(saved)
 
     context_dict['is_in_saved_locations'] = is_saved
-
     context_dict['location'] = location
 
+    # The POST method refers to someone adding a location to their saved_location
+    # parameter, which would be altering the database.
     if request.method == 'POST':
         print("POST OK")
         add_location(request, location_name_slug=location_name_slug)
-
-    # saved_location = UserProfile.objects.get("The current user")
 
     response = render(request, 'hows_the_weather/location.html', context=context_dict)
     return response
@@ -253,7 +240,7 @@ def add_comment(request, location_name_slug):
     return render(request, 'hows_the_weather/add_comment.html', context=context_dict)
 
 
-# How to Map this onto save_location button?
+# Function for adding a location.
 def add_location(request, location_name_slug):
     try:
         location = Location.objects.get(slug=location_name_slug)
