@@ -9,18 +9,23 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 import requests
-import os
 from django.template.defaultfilters import slugify
+import os
 from dotenv import load_dotenv
 load_dotenv()
 
 def search_function_algorithm(search_input):
-    starts_with = Location.objects.filter(slug__startswith=search_input)
-    contains = Location.objects.filter(slug__icontains=search_input)
+    formatted_input = slugify(search_input)
+    locations = Location.objects.all()
 
-    locations = set(starts_with).union(set(contains))
+    returned_locations = []
 
-    return locations
+    for location in locations:
+        if locations.name.lower().startswith(formatted_input):
+            returned_locations.append(location)
+        continue
+
+    return returned_locations
 
 # Create your views here.
 def index(request):
@@ -33,7 +38,6 @@ def get_top_three_locations_of_the_day():
     return Location.objects.order_by('-rating')[:3]
 
 def home(request):
-    #webbrowser.open("https://api.openweathermap.org/data/2.5/weather?q=petersfield,gb&appid=0bbf372223631fa46507a2dcae23e44e&mode=html")
     context_dict = {}
 
     liked_locations = get_top_three_locations_of_the_day()
@@ -57,8 +61,6 @@ def my_profile(request):
     return response
 
 def browse(request):
-    # We could separate liked_locations out of both browse and home so both
-    # pull from the same variable (for the day)
     liked_locations = get_top_three_locations_of_the_day()
     context_dict = {}
     context_dict['liked_locations'] = liked_locations
@@ -66,8 +68,29 @@ def browse(request):
     query = request.GET.get('searchbox')
     if query:
         context_dict['search_query'] = slugify(query)
-        # results = Location.objects.filter(slug__icontains=context_dict['search_query'])
-        results = search_function_algorithm(context_dict['search_query'])
+        
+        results = Location.objects.filter(name__icontains=query)
+        
+        if not results:
+            api_key = os.getenv("API_KEY")
+            url = f"https://api.openweathermap.org/data/2.5/find?q={query}&appid={api_key}&units=metric"
+            response = requests.get(url)
+            
+            if response.status_code == 200:
+                json_data = response.json()
+                locations_from_api = json_data['list']
+                
+                for loc in locations_from_api:
+                    location_name = loc['name']
+                    if not Location.objects.filter(name=location_name).exists():
+                        Location.objects.create(
+                            name=location_name,
+                            weather_description=loc['weather'][0]['description'],
+                            slug=slugify(location_name),
+                        )
+                
+                results = Location.objects.filter(name__icontains=query)
+        
         context_dict['results'] = results
     else:
         context_dict['search_query'] = None
@@ -78,16 +101,25 @@ def browse(request):
 
 def location(request, location_name_slug):
     context_dict = {}
-    location = Location.objects.get(slug=location_name_slug)
+
+    try:
+        location = Location.objects.get(slug=location_name_slug)
+    except Location.DoesNotExist:
+        location = None
+        context_dict['location'] = location
+        context_dict['json_data'] = {}
+        return render(request, 'hows_the_weather/location.html', context=context_dict)
+
+    forum, created = Forum.objects.get_or_create(location=location, locationName=location.name)
     
     my_key = os.getenv("API_KEY")
     url = f"https://api.openweathermap.org/data/2.5/weather?q={location.name}&appid={my_key}&mode=json&units=metric"
     response = requests.get(url)
     if response.status_code == 200:
-        json_data = response.json()  # Convert JSON response to a Python dictionary
+        json_data = response.json()
     else:
-        json_data = {}  # Default empty dict if the request fails
-    
+        json_data = {}
+
     if request.user.is_authenticated:
         is_saved = False
         user = UserProfile.objects.filter(user=request.user).first()
@@ -104,14 +136,13 @@ def location(request, location_name_slug):
     context_dict['location'] = location
     context_dict['json_data'] = json_data
 
-    # The POST method refers to someone adding a location to their saved_location
-    # parameter, which would be altering the database.
+    # POST request handling
     if request.method == 'POST':
-        print("POST OK")
         add_location(request, location_name_slug=location_name_slug)
 
     response = render(request, 'hows_the_weather/location.html', context=context_dict)
     return response
+
 
 def forum(request, location_name_slug):
     context_dict = {}
