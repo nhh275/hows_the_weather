@@ -10,6 +10,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 import requests
 from django.template.defaultfilters import slugify
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 def search_function_algorithm(search_input):
     formatted_input = slugify(search_input)
@@ -35,7 +38,6 @@ def get_top_three_locations_of_the_day():
     return Location.objects.order_by('-rating')[:3]
 
 def home(request):
-    #webbrowser.open("https://api.openweathermap.org/data/2.5/weather?q=petersfield,gb&appid=0bbf372223631fa46507a2dcae23e44e&mode=html")
     context_dict = {}
 
     liked_locations = get_top_three_locations_of_the_day()
@@ -79,9 +81,10 @@ def browse(request):
 
 def location(request, location_name_slug):
     context_dict = {}
+
     location = Location.objects.get(slug=location_name_slug)
-    
-    url = f"https://api.openweathermap.org/data/2.5/weather?q={location.name}&appid=0bbf372223631fa46507a2dcae23e44e&mode=json&units=metric"
+    my_key = os.getenv("API_KEY")
+    url = f"https://api.openweathermap.org/data/2.5/weather?q={location.name}&appid={my_key}&mode=json&units=metric"
     response = requests.get(url)
     if response.status_code == 200:
         json_data = response.json()  # Convert JSON response to a Python dictionary
