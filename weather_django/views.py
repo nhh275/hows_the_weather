@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 import requests
+from django.contrib import messages
 from django.template.defaultfilters import slugify
 import os
 from dotenv import load_dotenv
@@ -111,7 +112,7 @@ def location(request, location_name_slug):
         return render(request, 'hows_the_weather/location.html', context=context_dict)
 
     forum, created = Forum.objects.get_or_create(location=location, locationName=location.name)
-    
+    context_dict['avg_rating'] = (location.rating / location.people_voted)
     my_key = os.getenv("API_KEY")
     url = f"https://api.openweathermap.org/data/2.5/weather?q={location.name}&appid={my_key}&mode=json&units=metric"
     response = requests.get(url)
@@ -141,14 +142,22 @@ def location(request, location_name_slug):
         # PSEUDOCODE FOR THE RATING SYSTEM
             # if the request came from the rating systems
             # obtain the rating from the request (call it 'rating')
-            # location.rating += rating
-            # location.people_voted++ 
-            # location.save()
+            
         if request.POST['action'] == 'Save Location':
-            print("Achieved")
             add_location(request, location_name_slug=location_name_slug)
-        if request.POST['action'] == 'Rate':
-            print("RATING CASE PASSED")
+            messages.success(request, "Saved!")
+            return redirect(request.path)  # Redirect to same page to prevent resubmission
+
+        elif request.POST['action'] == 'Rate':
+            if request.POST.get("rating"):
+                location.rating += int(request.POST.get("rating"))
+                location.people_voted += 1
+                location.save()
+                messages.success(request, "Thank you for rating!")
+            else:
+                messages.error(request, "Please select a rating before submitting.")
+            
+            return redirect(request.path)  # Redirect to same page to prevent resubmission
 
     response = render(request, 'hows_the_weather/location.html', context=context_dict)
     return response

@@ -16,38 +16,43 @@
         Humidity: {{ json_data.main.humidity }}% <br>
         Wind speed: {{ json_data.wind.speed }}mph <br>
         Description: {{ json_data.weather.0.description }} <br>
-        Rating: {{ location.rating }} <br> 
+        Average Rating: {{ avg_rating }} <br> 
+
         Forum: <a href="{% url 'hows_the_weather:forum' location.slug %}">Below</a> <br>
-
-        <form id="rate_form" method="post" action="{% url 'hows_the_weather:location' location_name_slug=location.slug %}">
-            {% csrf_token %}
-
-            <input type="radio" id="rate1" name="rating" value="1">
-            <label for="rate1">1</label><br>
-            <input type="radio" id="rate2" name="rating" value="2">
-            <label for="rate2">2</label><br>
-            <input type="radio" id="rate3" name="rating" value="3">
-            <label for="rate3">3</label><br>
-            <input type="radio" id="rate4" name="rating" value="4">
-            <label for="rate4">4</label><br>
-            <input type="radio" id="rate5" name="rating" value="5">
-            <label for="rate5">5</label><br>
-            <!--Submit button goes below. -->
-                    
-            {% for field in form.visible_fields %}
-                {{ field.errors }}
-                {{ field.help_text }}
-                {{ field }}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message">{{ message }}</div>
             {% endfor %}
-            <input type="submit" name="action" value="Rate"/>
-        </form>
+        {% endif %}
+        {% if "error" in message.tags or not messages %}
+            <form id="rate_form" method="post" action="{% url 'hows_the_weather:location' location_name_slug=location.slug %}">
+                {% csrf_token %}
 
+                <input type="radio" id="rate1" name="rating" value="1">
+                <label for="rate1">1</label><br>
+                <input type="radio" id="rate2" name="rating" value="2">
+                <label for="rate2">2</label><br>
+                <input type="radio" id="rate3" name="rating" value="3">
+                <label for="rate3">3</label><br>
+                <input type="radio" id="rate4" name="rating" value="4">
+                <label for="rate4">4</label><br>
+                <input type="radio" id="rate5" name="rating" value="5">
+                <label for="rate5">5</label><br>
+                <!--Submit button goes below. -->
+                        
+                {% for field in form.visible_fields %}
+                    {{ field.errors }}
+                    {{ field.help_text }}
+                    {{ field }}
+                {% endfor %}
+                <input type="submit" name="action" value="Rate"/>
+            </form>
+        {% endif %}
         <!--We might need AJAX for the Real-Time Updates-->
         {% if is_in_saved_locations == False %}
             {% if user.is_authenticated %}
             Save Location
-                <form id="comment_form" method="post" action="{% url 'hows_the_weather:location' 
-                location_name_slug=location.slug %}">
+                <form id="comment_form" method="post" action="{% url 'hows_the_weather:location' location_name_slug=location.slug %}">
                     {% csrf_token %}
                     
                     {% for field in form.visible_fields %}

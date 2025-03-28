@@ -15,7 +15,7 @@ class Location(models.Model):
     #Can probably be renamed for clarity on average-calculation
     rating = models.IntegerField(default=0)
     # Keep the below commented until we know how to properly implement it
-    # people_voted = models.IntegerField(default=0)
+    people_voted = models.IntegerField(default=0)
 
     weather_description = models.CharField(max_length=MAX_CHAR_LENGTH)
     slug = models.SlugField(unique=True)
