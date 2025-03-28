@@ -42,8 +42,15 @@
                 <input type="submit" name="action" value="Rate"/>
             </form>
         {% else %}
-            Thanks for rating! <br>
+            {% if not messages %}
+                You cannot rate {{ location.name }} right now. Make sure you're logged in or come back tomorrow! <br>
+            {% endif %}
         {% endif %}
+        {% for message in messages %}
+            {% if "warning" not in message.tags %}
+                <p>{{ message }}</p>
+            {% endif %}
+        {% endfor %}
         <!--We might need AJAX for the Real-Time Updates-->
         {% if is_in_saved_locations == False %}
             {% if user.is_authenticated %}

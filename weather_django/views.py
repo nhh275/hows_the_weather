@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.http import HttpResponse
-from weather_django.models import Location, Forum, UserProfile, Comment
+from weather_django.models import Location, Forum, UserProfile, Comment, Rating
 from weather_django.forms import UserForm, UserProfileForm, CommentForm
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -9,6 +9,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 import requests
+from django.utils.timezone import now
+from datetime import date
 from django.contrib import messages
 from django.template.defaultfilters import slugify
 from django.db.models import F
@@ -37,7 +39,7 @@ async def asynchronous_view_test(request):
     return HttpResponse("Async Test")
 
 def get_top_three_locations_of_the_day():
-    return Location.objects.annotate(rating_per_person=F('rating') / F('people_voted')).order_by('-rating_per_person')[:3]
+    return Location.objects.annotate(rating_per_person=F('total_rating') / F('people_voted')).order_by('-rating_per_person')[:3]
 
 def home(request):
     context_dict = {}
@@ -113,7 +115,7 @@ def location(request, location_name_slug):
 
     forum, created = Forum.objects.get_or_create(location=location, locationName=location.name)
     if location.people_voted > 0:
-        context_dict['avg_rating'] = round(location.rating / location.people_voted, 2)
+        context_dict['avg_rating'] = round(location.total_rating / location.people_voted, 2)
     else:
         context_dict['avg_rating'] = 0
     my_key = os.getenv("API_KEY")
@@ -139,25 +141,46 @@ def location(request, location_name_slug):
     context_dict['is_in_saved_locations'] = is_saved
     context_dict['location'] = location
     context_dict['json_data'] = json_data
-    show_form = request.session.get('show_form', True)  # Default to True if not set
+   
+    show_form = True  # default showing the form
+    if request.user.is_authenticated:
+        last_rating = Rating.objects.filter(user=request.user, location=location, date_rated=date.today()).exists()
+        if last_rating:
+            show_form = False  # hide if the user has rated it today
+    if not request.user.is_authenticated:
+        show_form = False
     context_dict['show_form'] = show_form
     # POST request handling
     if request.method == 'POST':            
         if request.POST['action'] == 'Save Location':
-            add_location(request, location_name_slug=location_name_slug)
-            messages.warning(request, message="Saved the location.")
+            if not is_saved:
+                add_location(request, location_name_slug=location_name_slug)
+                messages.warning(request, message="Saved the location.")
             return redirect(request.path)  # Redirect to same page to prevent resubmission
 
         elif request.POST['action'] == 'Rate':
             if request.POST.get("rating"):
-                location.rating += int(request.POST.get("rating"))
+                rating_value = int(request.POST.get("rating"))
+                # Check if a rating entry exists for this user, location, and today's date
+                rating_entry, created = Rating.objects.get_or_create(
+                    user=request.user, location=location, date_rated=date.today(),
+                    defaults={'rating_value': rating_value}  # Set default value if creating a new entry
+                )
+
+                if not created:
+                    # If the entry already exists, update the rating value
+                    rating_entry.rating_value = rating_value
+                    rating_entry.save()
+                location.total_rating += rating_value
                 location.people_voted += 1
                 location.save()
+                show_form = False
+
                 messages.success(request, "Thank you for rating!")
-                request.session['show_form'] = False
+                show_form = False
             else:
                 messages.error(request, message="Please select a rating before submitting.")
-                request.session['show_form'] = True
+                show_form = True
 
             return redirect(request.path)  # Redirect to same page to prevent resubmission
 

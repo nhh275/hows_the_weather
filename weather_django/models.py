@@ -3,6 +3,7 @@ from django.db import models
 from jsonfield import JSONField
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
+from django.utils.timezone import now
 MAX_CHAR_LENGTH = 128
 MAX_REVIEW_LENGTH = 256
 # Create your models here.
@@ -13,7 +14,7 @@ class Location(models.Model):
     location_forum = models.URLField(blank=False)
 
     #Can probably be renamed for clarity on average-calculation
-    rating = models.IntegerField(default=0)
+    total_rating = models.IntegerField(default=0)
     # Keep the below commented until we know how to properly implement it
     people_voted = models.IntegerField(default=0)
 
@@ -30,10 +31,21 @@ class Location(models.Model):
     def __str__(self):
         return self.name
     
+    
+class Rating(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    rating_value = models.IntegerField()
+    date_rated = models.DateField(default=now)
+    
+    class Meta:
+        verbose_name_plural = 'Ratings'
+        unique_together = ('user','location','date_rated')
+    
 class Forum(models.Model):
     locationName = models.CharField(max_length=MAX_CHAR_LENGTH)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)    
-    max_comments = models.IntegerField(default=0)
+    max_comments = models.IntegerField(default=100)
     weather_data = models.CharField(max_length=MAX_CHAR_LENGTH)
     slug = models.SlugField(unique=True)
     
