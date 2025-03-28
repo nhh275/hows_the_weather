@@ -23,13 +23,6 @@
 	{% endblock %}
 	<hr />
 
-	<div id="search">
-		<label>Search:</label><br>
-		<form method="GET" action="{% url 'hows_the_weather:browse' %}" id="searchform">
-			<input type="text" name="searchbox" value="{{ request.GET.searchbox }}"><br>
-		</form>
-	</div>
-
     <h1>
         {% block heading_block %}
             How’s The Weather Today?
