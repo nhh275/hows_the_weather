@@ -17,8 +17,6 @@
             <h3><a href="{% url 'hows_the_weather:saved-locations' %}">Saved Locations</a></h3>
             <h3><a href="{% url 'hows_the_weather:location' location.slug %}">Current Location: {{ location.name }}</a><br /></h3>
 
-            <!-- THIS SHOULD BE THE 'DETAILS' LINK OF THE URL!!!!! -->
-            Edit (TODO)
             <br>
             <h3><a href="{% url 'hows_the_weather:logout' %}">Log Out</a></h3><br>
         {% else %}

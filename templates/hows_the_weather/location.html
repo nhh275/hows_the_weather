@@ -18,9 +18,8 @@
         Wind speed: {{ json_data.wind.speed }}mph <br>
         Description: {{ json_data.weather.0.description }} <br>
         Average Rating: {{ avg_rating }} <br> 
-
+        <a href="{% url 'hows_the_weather:forum' location.slug %}">Forum</a> <br>
         {% if is_users_city %}
-            <a href="{% url 'hows_the_weather:forum' location.slug %}">Forum</a> <br>
             {% if show_form %}
                 <form id="rate_form" method="post" action="{% url 'hows_the_weather:location' location_name_slug=location.slug %}">
                     {% csrf_token %}

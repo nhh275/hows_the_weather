@@ -19,7 +19,6 @@ from django.db.models import F
 import os
 from dotenv import load_dotenv
 load_dotenv()
-from django.contrib.gis.geoip2 import GeoIP2
 import geocoder
 
 def search_function_algorithm(search_input):
@@ -79,7 +78,6 @@ def my_profile(request):
         location_name = json.loads(location_name.decode("utf-8"))["city"]  # Decode JSON
     else:
         location_name = request.session.get("user_city", "Unknown")  # Get from session
-    print(location_name)
 
     # Change it such that the location refers to a specific location rather than getting
     # The first location with the same name.
