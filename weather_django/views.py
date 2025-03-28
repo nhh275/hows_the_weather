@@ -19,7 +19,6 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 from django.contrib.gis.geoip2 import GeoIP2
-import socket
 import geocoder
 
 def search_function_algorithm(search_input):
@@ -34,6 +33,14 @@ def search_function_algorithm(search_input):
         continue
 
     return returned_locations
+
+def get_ip():
+    public_ip = requests.get("https://api64.ipify.org").text
+    df = pd.DataFrame({'ip': [public_ip]})
+    df['city'] = df['ip'].apply(lambda x: geocoder.ip(x).city)
+    cityName = df['city'].iloc[0]
+
+    return cityName
 
 # Create your views here.
 def index(request):
@@ -62,12 +69,13 @@ def my_weather(request):
 
 def my_profile(request):
     context_dict = {}
-    hostname = socket.gethostname()
-    public_ip = requests.get("https://api64.ipify.org").text
-    df = pd.DataFrame({'ip': [public_ip]})
-    df['city'] = df['ip'].apply(lambda x: geocoder.ip(x).city)
-    cityName = df['city'].iloc[0]
+    location_name = get_ip()
 
+    # Change it such that the location refers to a specific location rather than getting
+    # The first location with the same name.
+    location_object = Location.objects.get(name=location_name)
+
+    context_dict['location'] = location_object 
 
     context_dict['profile'] = None
     if request.user.is_authenticated:
@@ -116,6 +124,8 @@ def browse(request):
 
 def location(request, location_name_slug):
     context_dict = {}
+    context_dict['user_city'] = get_ip()
+
     try:
         location = Location.objects.get(slug=location_name_slug)
     except Location.DoesNotExist:
@@ -123,6 +133,9 @@ def location(request, location_name_slug):
         context_dict['location'] = location
         context_dict['json_data'] = {}
         return render(request, 'hows_the_weather/location.html', context=context_dict)
+
+    
+    context_dict['is_users_city'] = context_dict['user_city']==location.name
 
     forum, created = Forum.objects.get_or_create(location=location, locationName=location.name)
     if location.people_voted > 0:
@@ -198,16 +211,16 @@ def location(request, location_name_slug):
     response = render(request, 'hows_the_weather/location.html', context=context_dict)
     return response
 
-# def add_rating(requet, )
-
 def forum(request, location_name_slug):
     context_dict = {}
+    context_dict['current_location'] = get_ip()
     try:
         forum_used = Forum.objects.get(slug=location_name_slug)
         comments = Comment.objects.filter(forum=forum_used)
         
         context_dict['forum'] = forum_used  
         context_dict['location'] = forum_used.location
+        context_dict['is_users_location'] = context_dict['current_location']==context_dict['location'].name
         context_dict['comments'] = comments
     except Forum.DoesNotExist:
         forum_used = None  
