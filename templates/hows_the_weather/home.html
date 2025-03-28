@@ -12,12 +12,7 @@
     {% block body_block %}
         <h2>The Most Subjective Weather Report you’ll ever need!</h2>
 
-		<div id="search">
-			<label>Search:</label><br>
-            <form method="GET" action="{% url 'hows_the_weather:browse' %}" id="searchform">
-                <input type="text" name="searchbox" value="{{ request.GET.searchbox }}"><br>
-            </form>
-		</div>
+		
         <hr />
         {% if liked_locations %}
             {% for location in liked_locations %}

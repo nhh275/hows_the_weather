@@ -4,7 +4,7 @@
 
 <html>
     {% block heading_block %}
-        Forum for {{ location }}
+        Forum for <a href="{% url 'hows_the_weather:location' location.slug %}">{{ location.name }}</a> <br>
     {% endblock %}
 
     {% block body_block %}

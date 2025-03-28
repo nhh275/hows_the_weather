@@ -3,13 +3,42 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hows_the_weather.settings')
 
 import django
 django.setup()
-from weather_django.models import Location, Forum, Comment
+from weather_django.models import Location, Forum, Comment, User
+from django.db import connection
 
 def populate():
     Comment.objects.all().delete()
     Forum.objects.all().delete()
     Location.objects.all().delete()
-    # SavedLocationsList.objects.all().delete()
+    superuser = User.objects.filter(is_superuser=True).first()
+
+    # Step 2: Delete all users except the superuser
+    User.objects.exclude(is_superuser=True).delete()
+
+    if superuser and superuser.id != 1:
+        # Step 3: Store superuser data, delete it, then recreate with ID 1
+        superuser_data = {
+            "username": superuser.username,
+            "email": superuser.email,
+            "password": superuser.password,  # Keep hashed password
+            "is_superuser": True,
+            "is_staff": superuser.is_staff,
+        }
+        
+        superuser.delete()  # Delete the existing superuser
+
+        # Reset SQLite sequence (needed to ensure next ID is 1)
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM sqlite_sequence WHERE name = 'auth_user';")
+
+        # Step 4: Recreate the superuser with ID=1
+        new_superuser = User.objects.create(**superuser_data)
+        new_superuser.id = 1
+        new_superuser.save()
+
+    # Step 5: Ensure new users start from ID 2
+    with connection.cursor() as cursor:
+        cursor.execute("DELETE FROM sqlite_sequence WHERE name = 'auth_user';")
     
     forumVars = [
         {'max_comments':100,
