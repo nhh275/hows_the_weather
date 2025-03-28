@@ -19,7 +19,6 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 from django.contrib.gis.geoip2 import GeoIP2
-import socket
 import geocoder
 
 def search_function_algorithm(search_input):
@@ -36,7 +35,6 @@ def search_function_algorithm(search_input):
     return returned_locations
 
 def get_ip():
-    hostname = socket.gethostname()
     public_ip = requests.get("https://api64.ipify.org").text
     df = pd.DataFrame({'ip': [public_ip]})
     df['city'] = df['ip'].apply(lambda x: geocoder.ip(x).city)
