@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 import requests
 from django.contrib import messages
 from django.template.defaultfilters import slugify
+from django.db.models import F
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -36,7 +37,7 @@ async def asynchronous_view_test(request):
     return HttpResponse("Async Test")
 
 def get_top_three_locations_of_the_day():
-    return Location.objects.order_by('-rating')[:3]
+    return Location.objects.annotate(rating_per_person=F('rating') / F('people_voted')).order_by('-rating_per_person')[:3]
 
 def home(request):
     context_dict = {}
@@ -102,17 +103,19 @@ def browse(request):
 
 def location(request, location_name_slug):
     context_dict = {}
-
     try:
         location = Location.objects.get(slug=location_name_slug)
     except Location.DoesNotExist:
-        location = None
+        location = None 
         context_dict['location'] = location
         context_dict['json_data'] = {}
         return render(request, 'hows_the_weather/location.html', context=context_dict)
 
     forum, created = Forum.objects.get_or_create(location=location, locationName=location.name)
-    context_dict['avg_rating'] = (location.rating / location.people_voted)
+    if location.people_voted > 0:
+        context_dict['avg_rating'] = round(location.rating / location.people_voted, 2)
+    else:
+        context_dict['avg_rating'] = 0
     my_key = os.getenv("API_KEY")
     url = f"https://api.openweathermap.org/data/2.5/weather?q={location.name}&appid={my_key}&mode=json&units=metric"
     response = requests.get(url)
@@ -136,16 +139,13 @@ def location(request, location_name_slug):
     context_dict['is_in_saved_locations'] = is_saved
     context_dict['location'] = location
     context_dict['json_data'] = json_data
-
+    show_form = request.session.get('show_form', True)  # Default to True if not set
+    context_dict['show_form'] = show_form
     # POST request handling
-    if request.method == 'POST':
-        # PSEUDOCODE FOR THE RATING SYSTEM
-            # if the request came from the rating systems
-            # obtain the rating from the request (call it 'rating')
-            
+    if request.method == 'POST':            
         if request.POST['action'] == 'Save Location':
             add_location(request, location_name_slug=location_name_slug)
-            messages.success(request, "Saved!")
+            messages.warning(request, message="Saved the location.")
             return redirect(request.path)  # Redirect to same page to prevent resubmission
 
         elif request.POST['action'] == 'Rate':
@@ -154,9 +154,11 @@ def location(request, location_name_slug):
                 location.people_voted += 1
                 location.save()
                 messages.success(request, "Thank you for rating!")
+                request.session['show_form'] = False
             else:
-                messages.error(request, "Please select a rating before submitting.")
-            
+                messages.error(request, message="Please select a rating before submitting.")
+                request.session['show_form'] = True
+
             return redirect(request.path)  # Redirect to same page to prevent resubmission
 
     response = render(request, 'hows_the_weather/location.html', context=context_dict)

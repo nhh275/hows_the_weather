@@ -18,16 +18,10 @@
         Description: {{ json_data.weather.0.description }} <br>
         Average Rating: {{ avg_rating }} <br> 
 
-        Forum: <a href="{% url 'hows_the_weather:forum' location.slug %}">Below</a> <br>
-        {% if messages %}
-            {% for message in messages %}
-                <div class="message">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-        {% if "error" in message.tags or not messages %}
+        <a href="{% url 'hows_the_weather:forum' location.slug %}">Forum</a> <br>
+        {% if show_form %}
             <form id="rate_form" method="post" action="{% url 'hows_the_weather:location' location_name_slug=location.slug %}">
                 {% csrf_token %}
-
                 <input type="radio" id="rate1" name="rating" value="1">
                 <label for="rate1">1</label><br>
                 <input type="radio" id="rate2" name="rating" value="2">
@@ -47,11 +41,13 @@
                 {% endfor %}
                 <input type="submit" name="action" value="Rate"/>
             </form>
+        {% else %}
+            Thanks for rating! <br>
         {% endif %}
         <!--We might need AJAX for the Real-Time Updates-->
         {% if is_in_saved_locations == False %}
             {% if user.is_authenticated %}
-            Save Location
+            <!-- Save Location -->
                 <form id="comment_form" method="post" action="{% url 'hows_the_weather:location' location_name_slug=location.slug %}">
                     {% csrf_token %}
                     
@@ -64,7 +60,7 @@
                 </form>
             {% endif %}
         {% else %}
-            Already Saved!
+            Location Saved!
         {% endif %}
     {% else %}
         <p>Location not found!</p>
