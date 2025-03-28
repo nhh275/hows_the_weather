@@ -9,13 +9,10 @@ body {
 }
 
 /* Searchbox: */
-input {
-	width: 400px;
-	height: 25px;
-}
-
 #search {
 	font-weight: bold;
+	width: 400px;
+	height: 25px;
 }
 
 /* Sidebar: */

@@ -11,11 +11,10 @@
         </title>
     </head>
 
-	{% block sidebar_block %}
+    {% block sidebar_block %}
 	<ul>
 		<li><a href="{% url 'hows_the_weather:home' %}">Home</a><li>
 		<li><a href="{% url 'hows_the_weather:my-profile' %}">My Profile</a></li>
-		<!-- THE BROWSE LINK SHOULD BE ON THE RIGHT OF THE SIDEBAR-->
 		<li><a href="{% url 'hows_the_weather:browse' %}">Browse</a></li>
 		{% if user.is_authenticated %}
 		<li><a href="{% url 'hows_the_weather:logout' %}">Log Out</a></li>
@@ -24,7 +23,12 @@
 	{% endblock %}
 	<hr />
 
-    
+	<div id="search">
+		<label>Search:</label><br>
+		<form method="GET" action="{% url 'hows_the_weather:browse' %}" id="searchform">
+			<input type="text" name="searchbox" value="{{ request.GET.searchbox }}"><br>
+		</form>
+	</div>
 
     <h1>
         {% block heading_block %}
