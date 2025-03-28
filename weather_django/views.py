@@ -71,6 +71,13 @@ def my_weather(request):
 
 def my_profile(request):
     context_dict = {}
+    location_name = get_ip()
+
+    # Change it such that the location refers to a specific location rather than getting
+    # The first location with the same name.
+    location_object = Location.objects.get(name=location_name)
+
+    context_dict['location'] = location_object 
 
     context_dict['profile'] = None
     if request.user.is_authenticated:
@@ -208,12 +215,14 @@ def location(request, location_name_slug):
 
 def forum(request, location_name_slug):
     context_dict = {}
+    context_dict['current_location'] = get_ip()
     try:
         forum_used = Forum.objects.get(slug=location_name_slug)
         comments = Comment.objects.filter(forum=forum_used)
         
         context_dict['forum'] = forum_used  
         context_dict['location'] = forum_used.location
+        context_dict['is_users_location'] = context_dict['current_location']==context_dict['location'].name
         context_dict['comments'] = comments
     except Forum.DoesNotExist:
         forum_used = None  
