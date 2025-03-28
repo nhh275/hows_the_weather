@@ -17,7 +17,6 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('test/', asynchronous_view_test, name='test'),
     path('home/', views.home, name='home'),
-    path('my-weather/', views.my_weather, name='my-weather'),
     path('my-profile/', views.my_profile, name='my-profile'),
     path('my-profile/saved/', views.saved_locations, name='saved-locations'),
     path('register/', views.register, name='register'),

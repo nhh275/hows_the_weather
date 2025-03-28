@@ -1,6 +1,7 @@
+import json
 from django.shortcuts import render
 from django.shortcuts import redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 import pandas as pd
 from weather_django.models import Location, Forum, UserProfile, Comment, Rating
 from weather_django.forms import UserForm, UserProfileForm, CommentForm
@@ -34,13 +35,20 @@ def search_function_algorithm(search_input):
 
     return returned_locations
 
-def get_ip():
-    public_ip = requests.get("https://api64.ipify.org").text
-    df = pd.DataFrame({'ip': [public_ip]})
-    df['city'] = df['ip'].apply(lambda x: geocoder.ip(x).city)
-    cityName = df['city'].iloc[0]
+def get_ip(request):
+    if not request.session.get("ip_grabbed", False):  # Check if already grabbed
+        public_ip = requests.get("https://api64.ipify.org").text  # Get public IP
+        df = pd.DataFrame({'ip': [public_ip]})
+        df['city'] = df['ip'].apply(lambda x: geocoder.ip(x).city)
+        city_name = df['city'].iloc[0] if not df['city'].isnull().iloc[0] else "Unknown"  # Handle missing data
+        
+        # Store the flag and city in session
+        request.session["ip_grabbed"] = True
+        request.session["user_city"] = city_name
+    else:
+        city_name = request.session.get("user_city", "Unknown")  # Retrieve stored city
 
-    return cityName
+    return JsonResponse({"city": city_name})  # Return JSON response
 
 # Create your views here.
 def index(request):
@@ -63,14 +71,15 @@ def home(request):
     response = render(request, 'hows_the_weather/home.html', context=context_dict)
     return response
 
-# Not Needed?
-def my_weather(request):
-    return HttpResponse("My Weather Page")
-
 def my_profile(request):
     context_dict = {}
-    location_name = get_ip()
-
+    if not request.session.get("ip_grabbed", False):  # First-time check
+        response = get_ip(request)  # Call get_ip
+        location_name = response.content  # Raw JSON bytes
+        location_name = json.loads(location_name.decode("utf-8"))["city"]  # Decode JSON
+    else:
+        location_name = request.session.get("user_city", "Unknown")  # Get from session
+    print(location_name)
     # Change it such that the location refers to a specific location rather than getting
     # The first location with the same name.
     location_object = Location.objects.get(name=location_name)
@@ -124,7 +133,13 @@ def browse(request):
 
 def location(request, location_name_slug):
     context_dict = {}
-    context_dict['user_city'] = get_ip()
+    if not request.session.get("ip_grabbed", False):  # First-time check
+        response = get_ip(request)  # Call get_ip
+        location_name = response.content  # Raw JSON bytes
+        location_name = json.loads(location_name.decode("utf-8"))["city"]  # Decode JSON
+    else:
+        location_name = request.session.get("user_city", "Unknown")  # Get from session
+    context_dict['user_city'] = location_name
 
     try:
         location = Location.objects.get(slug=location_name_slug)
@@ -213,7 +228,15 @@ def location(request, location_name_slug):
 
 def forum(request, location_name_slug):
     context_dict = {}
-    context_dict['current_location'] = get_ip()
+    
+    if not request.session.get("ip_grabbed", False):  # First-time check
+        response = get_ip(request)  # Call get_ip
+        location_name = response.content  # Raw JSON bytes
+        location_name = json.loads(location_name.decode("utf-8"))["city"]  # Decode JSON
+    else:
+        location_name = request.session.get("user_city", "Unknown")  # Get from session
+    context_dict['current_location'] = location_name
+    
     try:
         forum_used = Forum.objects.get(slug=location_name_slug)
         comments = Comment.objects.filter(forum=forum_used)
