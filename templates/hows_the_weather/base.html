@@ -23,29 +23,6 @@
 	{% endblock %}
 	<hr />
 
-	<div id="search">
-		<label>Search:</label><br>
-		<form method="GET" action="{% url 'hows_the_weather:browse' %}" id="searchform">
-			<input type="text" name="searchbox" value="{{ request.GET.searchbox }}"><br>
-		</form>
-	</div>
-
-            {% if user.is_authenticated %}
-            <a href="{% url 'hows_the_weather:logout' %}">Log Out</a><br>
-            {% endif %}
-
-            <div id="search">
-                <label>Search:</label><br>
-                <form method="GET" action="{% url 'hows_the_weather:browse' %}" id="searchform">
-                    <input type="text" name="searchbox" value="{{ request.GET.searchbox }}"><br>
-                </form>
-            </div>
-
-            <hr />
-        {% endblock %}
-    </ul>
-    
-
     <h1>
         {% block heading_block %}
             How’s The Weather Today?
