@@ -4,6 +4,7 @@
 
 <html>
     {% block body_block %}
+
     {% if json_data|length > 0 %}
 
         Name: {{ json_data.name }},{{ json_data.sys.country}} <br>
@@ -18,57 +19,63 @@
         Description: {{ json_data.weather.0.description }} <br>
         Average Rating: {{ avg_rating }} <br> 
 
-        <a href="{% url 'hows_the_weather:forum' location.slug %}">Forum</a> <br>
-        {% if show_form %}
-            <form id="rate_form" method="post" action="{% url 'hows_the_weather:location' location_name_slug=location.slug %}">
-                {% csrf_token %}
-                <input type="radio" id="rate1" name="rating" value="1">
-                <label for="rate1">1</label><br>
-                <input type="radio" id="rate2" name="rating" value="2">
-                <label for="rate2">2</label><br>
-                <input type="radio" id="rate3" name="rating" value="3">
-                <label for="rate3">3</label><br>
-                <input type="radio" id="rate4" name="rating" value="4">
-                <label for="rate4">4</label><br>
-                <input type="radio" id="rate5" name="rating" value="5">
-                <label for="rate5">5</label><br>
-                <!--Submit button goes below. -->
-                        
-                {% for field in form.visible_fields %}
-                    {{ field.errors }}
-                    {{ field.help_text }}
-                    {{ field }}
-                {% endfor %}
-                <input type="submit" name="action" value="Rate"/>
-            </form>
-        {% else %}
-            {% if not messages %}
-                You cannot rate {{ location.name }} right now. Make sure you're logged in or come back tomorrow! <br>
+        {% if is_users_city %}
+            <a href="{% url 'hows_the_weather:forum' location.slug %}">Forum</a> <br>
+            {% if show_form %}
+                <form id="rate_form" method="post" action="{% url 'hows_the_weather:location' location_name_slug=location.slug %}">
+                    {% csrf_token %}
+                    <input type="radio" id="rate1" name="rating" value="1">
+                    <label for="rate1">1</label><br>
+                    <input type="radio" id="rate2" name="rating" value="2">
+                    <label for="rate2">2</label><br>
+                    <input type="radio" id="rate3" name="rating" value="3">
+                    <label for="rate3">3</label><br>
+                    <input type="radio" id="rate4" name="rating" value="4">
+                    <label for="rate4">4</label><br>
+                    <input type="radio" id="rate5" name="rating" value="5">
+                    <label for="rate5">5</label><br>
+                    <!--Submit button goes below. -->
+                            
+                    {% for field in form.visible_fields %}
+                        {{ field.errors }}
+                        {{ field.help_text }}
+                        {{ field }}
+                    {% endfor %}
+                    <input type="submit" name="action" value="Rate"/>
+                </form>
+            {% else %}
+                {% if not messages %}
+                    You cannot rate {{ location.name }} right now. Make sure you're logged in or come back tomorrow! <br>
+                {% endif %}
             {% endif %}
+        {% else %}
+            This is not your recorded city, so you can't rate this location!
         {% endif %}
+
         {% for message in messages %}
             {% if "warning" not in message.tags %}
                 <p>{{ message }}</p>
             {% endif %}
         {% endfor %}
         <!--We might need AJAX for the Real-Time Updates-->
-        {% if is_in_saved_locations == False %}
-            {% if user.is_authenticated %}
-            <!-- Save Location -->
-                <form id="comment_form" method="post" action="{% url 'hows_the_weather:location' location_name_slug=location.slug %}">
-                    {% csrf_token %}
-                    
-                    {% for field in form.visible_fields %}
-                        {{ field.errors }}
-                        {{ field.help_text }}
-                        {{ field }}
-                    {% endfor %}
-                    <input type="submit" name="action" value="Save Location"/>
-                </form>
+    
+            {% if is_in_saved_locations == False %}
+                {% if user.is_authenticated %}
+                <!-- Save Location -->
+                    <form id="comment_form" method="post" action="{% url 'hows_the_weather:location' location_name_slug=location.slug %}">
+                        {% csrf_token %}
+                        
+                        {% for field in form.visible_fields %}
+                            {{ field.errors }}
+                            {{ field.help_text }}
+                            {{ field }}
+                        {% endfor %}
+                        <input type="submit" name="action" value="Save Location"/>
+                    </form>
+                {% endif %}
+            {% else %}
+                <br />Location Saved!
             {% endif %}
-        {% else %}
-            Location Saved!
-        {% endif %}
     {% else %}
         <p>Location not found!</p>
     {% endif %}

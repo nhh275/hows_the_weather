@@ -35,6 +35,15 @@ def search_function_algorithm(search_input):
 
     return returned_locations
 
+def get_ip():
+    hostname = socket.gethostname()
+    public_ip = requests.get("https://api64.ipify.org").text
+    df = pd.DataFrame({'ip': [public_ip]})
+    df['city'] = df['ip'].apply(lambda x: geocoder.ip(x).city)
+    cityName = df['city'].iloc[0]
+
+    return cityName
+
 # Create your views here.
 def index(request):
     return redirect('/hows-the-weather/home/')
@@ -62,12 +71,6 @@ def my_weather(request):
 
 def my_profile(request):
     context_dict = {}
-    hostname = socket.gethostname()
-    public_ip = requests.get("https://api64.ipify.org").text
-    df = pd.DataFrame({'ip': [public_ip]})
-    df['city'] = df['ip'].apply(lambda x: geocoder.ip(x).city)
-    cityName = df['city'].iloc[0]
-
 
     context_dict['profile'] = None
     if request.user.is_authenticated:
@@ -116,6 +119,8 @@ def browse(request):
 
 def location(request, location_name_slug):
     context_dict = {}
+    context_dict['user_city'] = get_ip()
+
     try:
         location = Location.objects.get(slug=location_name_slug)
     except Location.DoesNotExist:
@@ -123,6 +128,9 @@ def location(request, location_name_slug):
         context_dict['location'] = location
         context_dict['json_data'] = {}
         return render(request, 'hows_the_weather/location.html', context=context_dict)
+
+    
+    context_dict['is_users_city'] = context_dict['user_city']==location.name
 
     forum, created = Forum.objects.get_or_create(location=location, locationName=location.name)
     if location.people_voted > 0:
@@ -197,8 +205,6 @@ def location(request, location_name_slug):
 
     response = render(request, 'hows_the_weather/location.html', context=context_dict)
     return response
-
-# def add_rating(requet, )
 
 def forum(request, location_name_slug):
     context_dict = {}
