@@ -80,6 +80,7 @@ def my_profile(request):
     else:
         location_name = request.session.get("user_city", "Unknown")  # Get from session
     print(location_name)
+
     # Change it such that the location refers to a specific location rather than getting
     # The first location with the same name.
     location_object = Location.objects.get(name=location_name)
