@@ -8,9 +8,6 @@
     {% if json_data|length > 0 %}
 
         Name: {{ json_data.name }},{{ json_data.sys.country}} <br>
-        <!--AJAX Should handle these 2 things-->
-        <!--It should PULL the data from the API-->
-        <!--And should ideally update daily depending on the day.-->
         Temp: {{ json_data.main.temp }}C <br>
         Feels like: {{ json_data.main.feels_like }}C <br>
         Pressure: {{ json_data.main.pressure }}Pa <br>
@@ -33,7 +30,6 @@
                     <label for="rate4">4</label><br>
                     <input type="radio" id="rate5" name="rating" value="5">
                     <label for="rate5">5</label><br>
-                    <!--Submit button goes below. -->
                     
                     {% for field in form.visible_fields %}
                         {{ field.errors }}
@@ -56,11 +52,9 @@
                 <p>{{ message }}</p>
             {% endif %}
         {% endfor %}
-        <!--We might need AJAX for the Real-Time Updates-->
     
             {% if is_in_saved_locations == False %}
                 {% if user.is_authenticated %}
-                <!-- Save Location -->
                     <form id="comment_form" method="post" action="{% url 'hows_the_weather:location' location_name_slug=location.slug %}">
                         {% csrf_token %}
                         

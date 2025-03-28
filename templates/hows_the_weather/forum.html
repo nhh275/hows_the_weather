@@ -8,7 +8,6 @@
     {% endblock %}
 
     {% block body_block %}
-        <!--<p>Forum Slug: {{ forum.slug }}</p>-->
         {% if forum and forum.slug %}
             {% if user.is_authenticated %}
                 {% if is_users_location %}

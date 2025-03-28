@@ -21,40 +21,22 @@ from dotenv import load_dotenv
 load_dotenv()
 import geocoder
 
-def search_function_algorithm(search_input):
-    formatted_input = slugify(search_input)
-    locations = Location.objects.all()
-
-    returned_locations = []
-
-    for location in locations:
-        if locations.name.lower().startswith(formatted_input):
-            returned_locations.append(location)
-        continue
-
-    return returned_locations
-
 def get_ip(request):
-    if not request.session.get("ip_grabbed", False):  # Check if already grabbed
-        public_ip = requests.get("https://api64.ipify.org").text  # Get public IP
+    if not request.session.get("ip_grabbed", False): 
+        public_ip = requests.get("https://api64.ipify.org").text  
         df = pd.DataFrame({'ip': [public_ip]})
         df['city'] = df['ip'].apply(lambda x: geocoder.ip(x).city)
-        city_name = df['city'].iloc[0] if not df['city'].isnull().iloc[0] else "Unknown"  # Handle missing data
+        city_name = df['city'].iloc[0] if not df['city'].isnull().iloc[0] else "Unknown" 
         
-        # Store the flag and city in session
-        request.session["ip_grabbed"] = True
+        request.session["ip_grabbed"] = True # caching the ip stuff so it can be accessed quicker later
         request.session["user_city"] = city_name
     else:
-        city_name = request.session.get("user_city", "Unknown")  # Retrieve stored city
+        city_name = request.session.get("user_city", "Unknown")  
 
-    return JsonResponse({"city": city_name})  # Return JSON response
+    return JsonResponse({"city": city_name}) 
 
-# Create your views here.
 def index(request):
     return redirect('/hows-the-weather/home/')
-
-async def asynchronous_view_test(request):
-    return HttpResponse("Async Test")
 
 def get_top_three_locations_of_the_day():
     return Location.objects.annotate(rating_per_person=F('total_rating') / F('people_voted')).order_by('-rating_per_person')[:3]
@@ -79,6 +61,12 @@ def my_profile(request):
     else:
         location_name = request.session.get("user_city", "Unknown")  # Get from session
 
+    if not Location.objects.filter(name=location_name).exists():
+        Location.objects.create(
+            name=location_name,
+            weather_description=None,
+            slug=slugify(location_name),
+        )
     # Change it such that the location refers to a specific location rather than getting
     # The first location with the same name.
     location_object = Location.objects.get(name=location_name)
@@ -368,7 +356,6 @@ def add_comment(request, location_name_slug):
     return render(request, 'hows_the_weather/add_comment.html', context=context_dict)
 
 
-# Function for adding a location.
 def add_location(request, location_name_slug):
     try:
         location = Location.objects.get(slug=location_name_slug)
@@ -397,29 +384,22 @@ def add_location(request, location_name_slug):
 
 def delete_location(request, location_name):
     try:
-        #print("ONE")
         location = Location.objects.get(name=location_name)
         location_name_slug = location.slug
         url = reverse("hows_the_weather:location", kwargs={'location_name_slug': location_name_slug})
     except Location.DoesNotExist:
-        #print("TWO")
-
         location = None
         url = None
 
     if request.user.is_authenticated:
-        #print("THREE")
 
         if request.method == 'POST':
-            #print("FOUR")
 
             user = UserProfile.objects.filter(user=request.user).first()
 
             for location in user.saved_locations:
-                #print(location['url'] == url, location, " FIVE")
                 if location['url'] == url:
                     user.saved_locations.remove(location)
-                    #print("REMOVED SIX")
                     break
             
             user.save()

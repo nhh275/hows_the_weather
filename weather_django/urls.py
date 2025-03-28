@@ -4,9 +4,7 @@ from django.contrib import admin
 from django.urls import path
 from django.urls import include
 from weather_django import views
-from weather_django.views import asynchronous_view_test
 
-import asyncio 
 import os
 
 app_name = 'hows_the_weather'
@@ -15,7 +13,6 @@ app_name = 'hows_the_weather'
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('test/', asynchronous_view_test, name='test'),
     path('home/', views.home, name='home'),
     path('my-profile/', views.my_profile, name='my-profile'),
     path('my-profile/saved/', views.saved_locations, name='saved-locations'),
@@ -24,19 +21,8 @@ urlpatterns = [
     path('browse/', views.browse, name='browse'),
     path('logout/', views.user_logout, name='logout'),
     path('add_comment/', views.add_comment, name='add_comment'),
-    # Unless we can implement the logout function inside of the text itself, this 
-    # HAS to be last in the list.
     path('<slug:location_name_slug>/add_comment/', views.add_comment, name='add_comment'),
     path('hows-the-weather/<slug:location_name_slug>/add_comment/', views.add_comment, name='add_comment'),
     path('<slug:location_name_slug>/', views.location, name='location'),
     path('<slug:location_name_slug>/forum/', views.forum, name='forum'),
-
-
-    # Unless we can implement the logout function inside of the text itself, this 
-    # HAS to be last in the list.
-    # path('<slug:location_name_slug>/', views.location, name='location'),
-    # path('<slug:location_name_slug>/forum/', views.forum, name='forum'),
-
-
-
 ]

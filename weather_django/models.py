@@ -6,19 +6,16 @@ from django.contrib.auth.models import User
 from django.utils.timezone import now
 MAX_CHAR_LENGTH = 128
 MAX_REVIEW_LENGTH = 256
-# Create your models here.
 
 
 class Location(models.Model):
     name = models.CharField(max_length=MAX_CHAR_LENGTH)
     location_forum = models.URLField(blank=False)
 
-    #Can probably be renamed for clarity on average-calculation
     total_rating = models.IntegerField(default=0)
-    # Keep the below commented until we know how to properly implement it
     people_voted = models.IntegerField(default=0)
 
-    weather_description = models.CharField(max_length=MAX_CHAR_LENGTH)
+    weather_description = models.CharField(max_length=MAX_CHAR_LENGTH, null=True)
     slug = models.SlugField(unique=True)
     
     def save(self, *args, **kwargs):
@@ -61,8 +58,6 @@ class Forum(models.Model):
     
 class Comment(models.Model):
     username = models.CharField(max_length=MAX_CHAR_LENGTH)
-
-    # If the forum is deleted, the comments will be deleted form the db. as well.
     forum = models.ForeignKey(Forum, on_delete=models.CASCADE)
     user_id = models.IntegerField(null=True,blank=True)
     text = models.CharField(max_length=MAX_REVIEW_LENGTH, null=True, blank=True)

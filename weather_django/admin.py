@@ -1,7 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
-
 from weather_django.models import Location, Forum, Comment, UserProfile, Rating
 
 class CommentAdmin(admin.ModelAdmin):
