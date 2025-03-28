@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.http import HttpResponse
+import pandas as pd
 from weather_django.models import Location, Forum, UserProfile, Comment, Rating
 from weather_django.forms import UserForm, UserProfileForm, CommentForm
 from django.shortcuts import redirect
@@ -17,6 +18,9 @@ from django.db.models import F
 import os
 from dotenv import load_dotenv
 load_dotenv()
+from django.contrib.gis.geoip2 import GeoIP2
+import socket
+import geocoder
 
 def search_function_algorithm(search_input):
     formatted_input = slugify(search_input)
@@ -58,6 +62,13 @@ def my_weather(request):
 
 def my_profile(request):
     context_dict = {}
+    hostname = socket.gethostname()
+    public_ip = requests.get("https://api64.ipify.org").text
+    df = pd.DataFrame({'ip': [public_ip]})
+    df['city'] = df['ip'].apply(lambda x: geocoder.ip(x).city)
+    cityName = df['city'].iloc[0]
+
+
     context_dict['profile'] = None
     if request.user.is_authenticated:
         context_dict['profile'] = UserProfile.objects.filter(user=request.user).first()

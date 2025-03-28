@@ -27,7 +27,7 @@ SECRET_KEY = '4w-vk@p5ih6x9v@qsyn!^#(p^j@s7hlu1%h$ld&9-myfy*0_ao'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'nhh275.pythonanywhere.com']
 
 
 # Application definition
@@ -118,6 +118,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+GEOIP_PATH = os.path.join(BASE_DIR, 'geoip')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
