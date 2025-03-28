@@ -144,10 +144,10 @@ def location(request, location_name_slug):
             # location.rating += rating
             # location.people_voted++ 
             # location.save()
-        if "save_location" in request.POST:
+        if request.POST['action'] == 'Save Location':
             print("Achieved")
             add_location(request, location_name_slug=location_name_slug)
-        elif "rate" in request.POST:
+        if request.POST['action'] == 'Rate':
             print("RATING CASE PASSED")
 
     response = render(request, 'hows_the_weather/location.html', context=context_dict)

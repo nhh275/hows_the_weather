@@ -7,7 +7,6 @@
     {% if json_data|length > 0 %}
 
         Name: {{ json_data.name }},{{ json_data.sys.country}} <br>
-        <!-- {{ json_data.coord.lon }},{{ json_data.coord.lat }} -->
         <!--AJAX Should handle these 2 things-->
         <!--It should PULL the data from the API-->
         <!--And should ideally update daily depending on the day.-->
@@ -20,7 +19,9 @@
         Rating: {{ location.rating }} <br> 
         Forum: <a href="{% url 'hows_the_weather:forum' location.slug %}">Below</a> <br>
 
-        <form id="rate_form" method="post" action="{% url 'hows_the_weather:location' location_name_slug=location.slug %}"></form>
+        <form id="rate_form" method="post" action="{% url 'hows_the_weather:location' location_name_slug=location.slug %}">
+            {% csrf_token %}
+
             <input type="radio" id="rate1" name="rating" value="1">
             <label for="rate1">1</label><br>
             <input type="radio" id="rate2" name="rating" value="2">
@@ -32,21 +33,21 @@
             <input type="radio" id="rate5" name="rating" value="5">
             <label for="rate5">5</label><br>
             <!--Submit button goes below. -->
-            {% csrf_token %}
                     
             {% for field in form.visible_fields %}
                 {{ field.errors }}
                 {{ field.help_text }}
                 {{ field }}
             {% endfor %}
-            <input type="submit" name="rate" value="Rate Away!" />
+            <input type="submit" name="action" value="Rate"/>
         </form>
 
         <!--We might need AJAX for the Real-Time Updates-->
         {% if is_in_saved_locations == False %}
             {% if user.is_authenticated %}
             Save Location
-                <form id="comment_form" method="post" action="{% url 'hows_the_weather:location' location_name_slug=location.slug %}">
+                <form id="comment_form" method="post" action="{% url 'hows_the_weather:location' 
+                location_name_slug=location.slug %}">
                     {% csrf_token %}
                     
                     {% for field in form.visible_fields %}
@@ -54,7 +55,7 @@
                         {{ field.help_text }}
                         {{ field }}
                     {% endfor %}
-                    <input type="submit" name="save_location" value="Save Location" />
+                    <input type="submit" name="action" value="Save Location"/>
                 </form>
             {% endif %}
         {% else %}
